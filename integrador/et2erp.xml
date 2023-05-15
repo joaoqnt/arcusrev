@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<integrador>
+	<files>	
+		<login>
+			<usuario>
+				<login>
+					<data>
+						select
+							pf.parcodigo as id,
+							gp.parnome as nome,
+							pf.funadministra as administrador
+						from genparcei gp
+							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
+						where cast(pf.parcodigo as varchar(10))  = :PARCODIGO
+							and cast(pf.funsenha as varchar(10)) = :FUNSENHA
+					</data>
+				</login>
+			</usuario>
+		</login>
+		<query>
+			<atualiza_viagem>
+				<viagem>
+					<update>
+						<data>
+							update rviviagem set 
+								parnome = :MOTORISTA, 
+								VIADESTINO = :DESTINO,
+								VIAFINALIDADE = :FINALIDADE,
+								TRACODIGO = :TRANSPORTE
+							where viacodigo = :ID
+						</data>				
+					</update>
+				</viagem>
+			</atualiza_viagem>
+			<viagem>
+				<getid>
+					<data>
+						select coalesce(max(viacodigo),0) + 1 as IN_ID from rviviagem
+					</data>
+				</getid>
+				<insert>
+					<data>
+						INSERT INTO RVIVIAGEM (
+							VIACODIGO, 
+							EMPCODIGO, 
+							PARNOME,
+							TRACODIGO, 
+							VIADESTINO, 
+							VIAFINALIDADE, 
+							VIAACOMPANHANTES, 
+							VIADATSAIDA, 
+							VIADATREGRESSO, 
+							PARCODIGOINC, 
+							VIAOBSERVACAO) 
+						VALUES (
+							:IN_ID, 
+							:EMPRESA, 
+							:MOTORISTA, 
+							:TRANSPORTE, 
+							:DESTINO, 
+							:FINALIDADE, 
+							:ACOMPANHANTES, 
+							:DATASAIDA, 
+							:DATAREGRESSO, 
+							:RESPONSAVEL, 
+							:OBSERVACAO);
+					</data>
+				</insert>
+			</viagem>
+			<getall>
+				<viagem>
+					<data>
+						select
+							r.viacodigo as ID,
+							r.empcodigo as empresa,
+							r.tracodigo as transporte,
+							r.viadestino as destino,
+							r.parnome as motorista,
+							coalesce(r.viafinalidade,'Nenhuma finalidade relatada') as finalidade,
+							coalesce(r.viaacompanhantes,'Não') as acompanhantes,
+							r.viadatsaida as datasaida,
+							r.viadatregresso as dataregresso,
+							r.parcodigoinc as responsavel,
+							coalesce(r.viaobservacao,'') as observacao
+						from rviviagem r
+						order by r.viacodigo desc
+					</data>
+				</viagem>
+				<despesa>
+					<data>
+						select
+							d.viacodigo as viagem,
+							d.descodigo as id,
+							d.desnome as nome,
+							d.desdata as data,
+							d.desnota as nota,
+							d.desfornecedor as fornecedor,
+							d.deslocal as local,
+							d.desvalor as valor
+						from rvidespesa d
+					</data>
+				</despesa>
+				<transporte>
+					<data>
+						select t.tracodigo as id, t.tranome as nome from rvitransporte t
+					</data>
+				</transporte>
+				<responsavel>
+					<data>
+						select
+							pf.parcodigo as id,
+							gp.parnome as nome,
+							pf.funadministra as administrador
+						from genparcei gp
+							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
+					</data>
+				</responsavel>
+			</getall>
+		</query>
+	</files>		
+</integrador>
