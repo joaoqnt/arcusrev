@@ -1,4 +1,6 @@
+import 'package:arcusrev/controller/viagem_controller.dart';
 import 'package:arcusrev/model/transporte.dart';
+import 'package:arcusrev/model/usuario.dart';
 import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/repository/viagem_repository.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
@@ -15,10 +17,14 @@ class ViagemDadosController{
   TextEditingController tecDatasaida = MaskedTextController(mask: '00/00/0000');
   TextEditingController tecDatachegada = MaskedTextController(mask: '00/00/0000');
   TextEditingController tecObservacao = TextEditingController();
+  List<Transporte> transportes = [];
   Transporte? transporteSelected;
+  DateTime? selectedDate;
 
-  Future updateViagem(Viagem viagem) async{
+  Future updateViagem(Viagem viagem,ViagemController viagemController) async{
+    alteraDados(viagem);
     await viagemRepository.updateViagem(viagem);
+    // viagemController.viagens = await viagemRepository.getAll();
   }
   preencheCampos(Viagem viagem){
     tecId.text = viagem.id.toString();
@@ -37,12 +43,69 @@ class ViagemDadosController{
     viagem.finalidade = tecFinalidade.text;
   }
 
-  Future insertViagem() async{
+  Future insertViagem(Usuario responsavel, ViagemController viagemController) async{
     Viagem viagem = Viagem();
-    // viagem.motorista = tecMotorista.text;
-    // viagem.transporte = transporteSelected;
-    // viagem.destino = tecDestino.text;
-    // viagem.finalidade = tecFinalidade.text;
-    await viagemRepository.insertViagem(viagem);
+    viagem.id = int.parse(tecId.text);
+    viagem.responsavel = responsavel;
+    viagem.motorista = tecMotorista.text;
+    viagem.finalidade = tecFinalidade.text;
+    viagem.destino = tecDestino.text;
+    viagem.transporte = transporteSelected;
+    viagem.dataregresso = DateTime.now();
+    viagem.datasaida = DateTime.now();
+    print(viagem.datasaida);
+    print(viagem.motorista);
+    try{
+      await viagemRepository.insertViagem(viagem);
+      // viagemController.viagens = await viagemRepository.getAll();
+    }catch(e){
+      print("erro ao cadastrar viagem $e");
+    }
+
+  }
+
+
+
+  Future deleteViagem(Viagem viagem,ViagemController viagemController) async{
+    try{
+      await viagemRepository.deleteViagem(viagem);
+      // viagemController.viagens = await viagemRepository.getAll();
+    }catch(e){
+      print("erro ao deletar viagem $e");
+    }
+  }
+
+  getTransportes(ViagemController viagemController){
+    transportes.clear();
+    transportes = viagemController.transportes;
+  }
+
+  Future setDateSaida(BuildContext context, {Viagem? viagem}) async{
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: viagem == null ? DateTime.now() : viagem.datasaida!,
+      firstDate: DateTime(DateTime.now().year),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      selectedDate = picked;
+      tecDatasaida.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
+      // print(tecDatasaida.text);
+    }
+  }
+
+  Future setDateChegada(BuildContext context, {Viagem? viagem}) async{
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: viagem == null ? DateTime.now() : viagem.dataregresso!,
+      firstDate: DateTime(DateTime.now().year),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      selectedDate = picked;
+      tecDatachegada.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
+    }
   }
 }

@@ -25,47 +25,59 @@
 							update rviviagem set 
 								parnome = :MOTORISTA, 
 								VIADESTINO = :DESTINO,
-								VIAFINALIDADE = :FINALIDADE
+								VIAFINALIDADE = :FINALIDADE,
+								TRACODIGO = :TRANSPORTE
 							where viacodigo = :ID
 						</data>				
 					</update>
 				</viagem>
 			</atualiza_viagem>
-			<viagem>
-				<getid>
-					<data>
-						select coalesce(max(viacodigo),0) + 1 as IN_ID from rviviagem
-					</data>
-				</getid>
-				<insert>
-					<data>
-						INSERT INTO RVIVIAGEM (
-							VIACODIGO, 
-							EMPCODIGO, 
-							PARNOME,
-							TRACODIGO, 
-							VIADESTINO, 
-							VIAFINALIDADE, 
-							VIAACOMPANHANTES, 
-							VIADATSAIDA, 
-							VIADATREGRESSO, 
-							PARCODIGOINC, 
-							VIAOBSERVACAO) 
-						VALUES (
-							:IN_ID, 
-							:EMPRESA, 
-							:MOTORISTA, 
-							:TRANSPORTE, 
-							:DESTINO, 
-							:FINALIDADE, 
-							:ACOMPANHANTES, 
-							:DATASAIDA, 
-							:DATAREGRESSO, 
-							:RESPONSAVEL, 
-							:OBSERVACAO);
-					</data>
-				</insert>
-			</viagem>
+			<cadastra_viagem>
+				<insercao>
+					<insert>
+						<data>
+							INSERT INTO RVIVIAGEM (
+                                VIACODIGO, 
+                                EMPCODIGO, 
+                                PARNOME,
+                                TRACODIGO, 
+                                VIADESTINO, 
+                                VIAFINALIDADE, 
+                                VIAACOMPANHANTES, 
+                                VIADATSAIDA, 
+                                VIADATREGRESSO, 
+                                PARCODIGOINC, 
+                                VIAOBSERVACAO) 
+                            VALUES (
+                                (select coalesce(max(viacodigo),0) + 1 from rviviagem), 
+                                :EMPRESA, 
+                                :MOTORISTA, 
+                                :TRANSPORTE, 
+                                :DESTINO, 
+                                :FINALIDADE, 
+                                :ACOMPANHANTES, 
+                                :DATASAIDA, 
+                                :DATAREGRESSO, 
+                                :RESPONSAVEL, 
+                                :OBSERVACAO) 
+						</data>
+					</insert>
+				</insercao>
+			</cadastra_viagem>
+			<deleta_viagem>
+				<viagem>
+					<delete>
+						<data>
+							delete from rviviagem where viacodigo = :ID
+						</data>
+					</delete>
+				</viagem>
+				<despesa>
+					<delete>
+						delete from rvidespesa where viacodigo = :ID
+					</delete>
+				</despesa>
+			</deleta_viagem>
 			<getall>
 				<viagem>
 					<data>

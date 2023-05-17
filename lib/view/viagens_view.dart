@@ -7,6 +7,8 @@ import 'package:arcusrev/widgets/alertdialog_widget.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/circularprogress_widget.dart';
+
 class ViagensView extends StatefulWidget {
   Usuario usuarioLogado;
   ViagensView(this.usuarioLogado,{Key? key}) : super(key: key);
@@ -19,6 +21,7 @@ class _ViagensViewState extends State<ViagensView> {
   ViagemController viagemController = ViagemController();
   AlertDialogWidget alertDialogWidget = AlertDialogWidget();
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
+  CircularProgressWidget circularProgressWidget = CircularProgressWidget();
   void initState() {
     init();
     super.initState();
@@ -32,14 +35,21 @@ class _ViagensViewState extends State<ViagensView> {
           actions: [
             IconButton(
                 onPressed: () {
+
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (BuildContext) => ViagemDadosView(transportes: viagemController.transportes,tipo: 'I',)
-                  ));
+                      context, MaterialPageRoute(builder: (BuildContext) =>
+                      ViagemDadosView(
+                        transportes: viagemController.transportes,
+                        tipo: 'I',
+                        usuarioLogado: widget.usuarioLogado,
+                        viagemController: viagemController,
+                        maxId: viagemController.getMaxId())
+                  )).then((value) => setState((){}));
                 },
                 icon: Icon(Icons.add))
           ]
       ),
-      body: Column(
+      body:Column(
         children: [
           Expanded(
               child: ListView.builder(
@@ -87,11 +97,13 @@ class _ViagensViewState extends State<ViagensView> {
                                     IconButton(
                                         onPressed: (){
                                           viagemController.viagemSelected = viagemController.viagens[index];
+                                          print(viagemController.viagens[index].transporte!.nome);
                                           Navigator.push(
                                               context, MaterialPageRoute(builder: (BuildContext) => ViagemDadosView(
                                               usuarioLogado: widget.usuarioLogado,
                                               viagemSelected: viagemController.viagemSelected,
-                                              transportes: viagemController.transportes)
+                                              transportes: viagemController.transportes,
+                                              viagemController: viagemController)
                                           )).then((value) => setState((){}));
                                         },
                                         icon: Icon(Icons.edit_outlined))

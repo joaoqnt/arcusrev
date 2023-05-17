@@ -12,9 +12,9 @@ class ViagemRepository{
 
   Future<List<Viagem>> getAll() async{
     List<Viagem> viagens = [];
-
     var http = Dio();
     try{
+      transportes.clear();
       Response response = await http.get(
           'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall',
           options: Options(headers: {'tenant': 'arcusrev_25650383000174'}));
@@ -46,7 +46,7 @@ class ViagemRepository{
     return viagens;
   }
 
-  updateViagem(Viagem viagem) async{
+  Future updateViagem(Viagem viagem) async{
     var http = Dio();
     try{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
@@ -73,7 +73,7 @@ class ViagemRepository{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
       print(viagem.toJson());
       Response response = await http.post(
-          'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/viagem',
+          'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/cadastra_viagem',
           options: Options(headers:{
             'tenant': 'arcusrev_25650383000174',
             HttpHeaders.contentTypeHeader: "application/json",
@@ -88,4 +88,22 @@ class ViagemRepository{
     }
     return true;
   }
+
+  Future deleteViagem(Viagem viagem) async{
+    var http = Dio();
+    try{
+      String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
+      Response response = await http.post(
+          'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/deleta_viagem',
+          options: Options(headers:{
+            'tenant': 'arcusrev_25650383000174',
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: viagemEncoded
+      );
+    }catch(e){
+      print("erro ao deletar viagem $e");
+    }
+  }
+
 }

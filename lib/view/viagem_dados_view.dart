@@ -1,3 +1,4 @@
+import 'package:arcusrev/controller/viagem_controller.dart';
 import 'package:arcusrev/controller/viagem_dados_controller.dart';
 import 'package:arcusrev/model/usuario.dart';
 import 'package:arcusrev/model/viagem.dart';
@@ -6,14 +7,25 @@ import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../model/transporte.dart';
+import '../utils/dataformato_util.dart';
+import '../widgets/circularprogress_widget.dart';
 
 class ViagemDadosView extends StatefulWidget {
   Usuario? usuarioLogado;
   Viagem? viagemSelected;
   List<Transporte>? transportes;
+  ViagemController? viagemController;
   String? tipo;
+  int? maxId;
 
-  ViagemDadosView({Key? key,this.usuarioLogado,this.viagemSelected,this.transportes,this.tipo}) : super(key: key);
+  ViagemDadosView({
+    Key? key,
+    this.usuarioLogado,
+    this.viagemSelected,
+    this.transportes,
+    this.tipo,
+    this.viagemController,
+    this.maxId}) :super(key: key);
 
   @override
   State<ViagemDadosView> createState() => _ViagemDadosViewState();
@@ -23,9 +35,10 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
   ViagemDadosController viagemCadastroController = ViagemDadosController();
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
+  CircularProgressWidget circularProgressWidget = CircularProgressWidget();
+
   void initState() {
     init();
-    print(widget.viagemSelected);
     super.initState();
   }
   @override
@@ -56,7 +69,7 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                         isExpanded:true,
                         hint: Text("Transporte"),
                         value: viagemCadastroController.transporteSelected,
-                        items: widget.transportes!.map((e) {
+                        items: viagemCadastroController.transportes.map((e) {
                           return DropdownMenuItem(
                               value: e,
                               child: Text('${e.nome}'));
@@ -76,26 +89,63 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
-              child: textFormFieldWidget.criaTff(viagemCadastroController.tecDatasaida, "Saida"),
+              child: TextFormField(
+                onTap: () async{
+                  await viagemCadastroController.setDateSaida(context);
+                },
+                onChanged: (value) {
+                  viagemCadastroController.tecDatasaida.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDate,"dd/MM/yyyy");
+                },
+                controller: viagemCadastroController.tecDatasaida,
+                decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Saida"),
+                keyboardType: TextInputType.none
+              )
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
-              child: textFormFieldWidget.criaTff(viagemCadastroController.tecDatachegada, "Chegada"),
+              child: TextFormField(
+                onTap: () async{
+                  await viagemCadastroController.setDateChegada(context);
+                },
+                onChanged: (value) {
+                  viagemCadastroController.tecDatachegada.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDate,"dd/MM/yyyy");
+                },
+                controller: viagemCadastroController.tecDatachegada,
+                decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Chegada"),
+                keyboardType: TextInputType.none
+              )
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
                     onPressed: () async{
-                      viagemCadastroController.alteraDados(widget.viagemSelected!);
-                      widget.tipo == 'I' ? viagemCadastroController.insertViagem() :
-                      await viagemCadastroController.updateViagem(widget.viagemSelected!);
+                      circularProgressWidget.showCircularProgress(context);
+                      widget.tipo == 'I' ? await viagemCadastroController.insertViagem(widget.usuarioLogado!,widget.viagemController!) :
+                      await viagemCadastroController.updateViagem(widget.viagemSelected!,widget.viagemController!);
+                      await widget.viagemController!.getAll();
+                      circularProgressWidget.hideCircularProgress(context);
                       Navigator.of(context).pop();
                     },
                     icon: Icon(Icons.save_outlined),
                     label: Text('Salvar'),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.lightGreen,
+                    )
+                ),
+                widget.tipo == 'I' ? Container() :
+                ElevatedButton.icon(
+                    onPressed: () async{
+                      circularProgressWidget.showCircularProgress(context);
+                      await viagemCadastroController.deleteViagem(widget.viagemSelected!,widget.viagemController!);
+                      await widget.viagemController!.getAll();
+                      circularProgressWidget.hideCircularProgress(context);
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.delete_outline),
+                    label: Text('Excluir'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.redAccent,
                     )
                 )
               ],
@@ -106,7 +156,9 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
     );
   }
   init(){
+    viagemCadastroController.getTransportes(widget.viagemController!);
     widget.viagemSelected == null ? null :
     viagemCadastroController.preencheCampos(widget.viagemSelected!);
+    widget.viagemSelected != null ? null : viagemCadastroController.tecId.text = widget.maxId.toString();
   }
 }

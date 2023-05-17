@@ -13,6 +13,7 @@ class ViagemController{
   Viagem? viagemSelected;
   double valorTotal = 0;
 
+
   Future<bool> getAll() async{
     viagens = await viagemRepository.getAll();
     return true;
@@ -22,9 +23,13 @@ class ViagemController{
     transportes = viagemRepository.transportes;
   }
 
-  // sumTotal(Viagem viagem){
-  //   viagem.despesas.forEach((element) {
-  //     valorTotal += element.valor!;
-  //   });
-  // }
+  int getMaxId(){
+    int maxId = 0;
+    viagens.forEach((element) {
+      if(element.id! > maxId){
+        maxId = element.id!;
+      }
+    });
+    return maxId + 1;
+  }
 }
