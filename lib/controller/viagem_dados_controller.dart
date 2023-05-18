@@ -19,7 +19,8 @@ class ViagemDadosController{
   TextEditingController tecObservacao = TextEditingController();
   List<Transporte> transportes = [];
   Transporte? transporteSelected;
-  DateTime? selectedDate;
+  DateTime? selectedDateSaida;
+  DateTime? selectedDateChegada;
 
   Future updateViagem(Viagem viagem,ViagemController viagemController) async{
     alteraDados(viagem);
@@ -41,6 +42,8 @@ class ViagemDadosController{
     viagem.transporte = transporteSelected;
     viagem.destino = tecDestino.text;
     viagem.finalidade = tecFinalidade.text;
+    selectedDateChegada != null ? viagem.dataregresso = selectedDateChegada : selectedDateChegada = viagem.dataregresso;
+    selectedDateSaida != null ? viagem.datasaida = selectedDateSaida : selectedDateSaida = viagem.datasaida;
   }
 
   Future insertViagem(Usuario responsavel, ViagemController viagemController) async{
@@ -51,8 +54,8 @@ class ViagemDadosController{
     viagem.finalidade = tecFinalidade.text;
     viagem.destino = tecDestino.text;
     viagem.transporte = transporteSelected;
-    viagem.dataregresso = DateTime.now();
-    viagem.datasaida = DateTime.now();
+    viagem.dataregresso = selectedDateChegada;
+    viagem.datasaida = selectedDateSaida;
     print(viagem.datasaida);
     print(viagem.motorista);
     try{
@@ -69,7 +72,6 @@ class ViagemDadosController{
   Future deleteViagem(Viagem viagem,ViagemController viagemController) async{
     try{
       await viagemRepository.deleteViagem(viagem);
-      // viagemController.viagens = await viagemRepository.getAll();
     }catch(e){
       print("erro ao deletar viagem $e");
     }
@@ -80,32 +82,32 @@ class ViagemDadosController{
     transportes = viagemController.transportes;
   }
 
-  Future setDateSaida(BuildContext context, {Viagem? viagem}) async{
+  Future setDateSaida(BuildContext context, {String? tipo, Viagem? viagem}) async{
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: viagem == null ? DateTime.now() : viagem.datasaida!,
+      initialDate: tipo == 'I' ? DateTime.now() : viagem!.datasaida!,
       firstDate: DateTime(DateTime.now().year),
       lastDate: DateTime(DateTime.now().year + 1),
     );
 
-    if (picked != null && picked != selectedDate) {
-      selectedDate = picked;
-      tecDatasaida.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
+    if (picked != null && picked != selectedDateSaida) {
+      selectedDateSaida = picked;
+      tecDatasaida.text = DataFormatoUtil.getDate(selectedDateSaida,"dd/MM/yyyy");
       // print(tecDatasaida.text);
     }
   }
 
-  Future setDateChegada(BuildContext context, {Viagem? viagem}) async{
+  Future setDateChegada(BuildContext context, {String? tipo, Viagem? viagem}) async{
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: viagem == null ? DateTime.now() : viagem.dataregresso!,
+      initialDate: tipo == 'I' ? DateTime.now()  : viagem!.dataregresso!,
       firstDate: DateTime(DateTime.now().year),
       lastDate: DateTime(DateTime.now().year + 1),
     );
 
-    if (picked != null && picked != selectedDate) {
-      selectedDate = picked;
-      tecDatachegada.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
+    if (picked != null && picked != selectedDateChegada) {
+      selectedDateChegada = picked;
+      tecDatachegada.text = DataFormatoUtil.getDate(selectedDateChegada,"dd/MM/yyyy");
     }
   }
 }

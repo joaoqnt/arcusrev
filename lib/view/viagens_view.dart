@@ -61,7 +61,10 @@ class _ViagensViewState extends State<ViagensView> {
                           viagemController.viagemSelected = viagemController.viagens[index];
                           print(viagemController.viagemSelected!.toJson());
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (BuildContext) => DespesasView(widget.usuarioLogado,viagemController.viagemSelected!)
+                              context, MaterialPageRoute(builder: (BuildContext) => DespesasView(
+                              widget.usuarioLogado,
+                              viagemController.viagemSelected!,
+                              viagemController)
                           )).then((value) => null);
                         },
                         child: Container(

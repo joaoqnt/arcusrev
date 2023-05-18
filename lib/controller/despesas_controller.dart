@@ -1,10 +1,12 @@
 import 'package:arcusrev/model/viagem.dart';
+import 'package:arcusrev/repository/despesa_repository.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
 import 'package:flutter/material.dart';
 
 import '../model/despesa.dart';
 
 class DespesasController{
+  DespesaRepository despesaRepository = DespesaRepository();
   TextEditingController tecFornecedor = TextEditingController();
   TextEditingController tecCodigo = TextEditingController();
   TextEditingController tecLocalidade = TextEditingController();
@@ -15,8 +17,50 @@ class DespesasController{
   String? despesaSelected;
   DateTime? selectedDate;
 
-  onTap(Despesa despesa){
+  alteraDados(Despesa despesa){
+    selectedDate == null ? null : despesa.data = selectedDate;
+    despesa.valor = double.tryParse(tecValor.text);
+    despesa.nome = despesaSelected;
+    despesa.nota = int.tryParse(tecDocumento.text);
+    despesa.local = tecLocalidade.text;
+    despesa.fornecedor = tecFornecedor.text;
+  }
+
+  insertDespesas(int viagem,{List<Despesa>? listdespesas, String? valor}){
+    despesaSelected = valor;
+    Despesa despesa = Despesa();
+    despesa.data = selectedDate;
+    despesa.nome = despesaSelected;
+    despesa.nota = int.tryParse(tecDocumento.text);
+    despesa.local = tecLocalidade.text;
+    despesa.valor = double.tryParse(tecValor.text);
+    despesa.fornecedor = tecFornecedor.text;
+    despesaRepository.insertDespesa(despesa,viagem: viagem);
+  }
+
+  updateDespesas(Despesa despesa, int viagem){
+    alteraDados(despesa);
+    print(despesa.toJson(viagem: viagem));
+    try{
+      despesaRepository.updateDespesa(despesa, viagem);
+    }catch(e){
+      print(despesa.toJson());
+      print("erro ao atualizar despesa $e");
+    }
+  }
+
+  deleteDespesas(Despesa despesa, int viagem){
+    try{
+      despesaRepository.deleteDespesa(despesa, viagem);
+    }catch(e){
+      print("erro ao deletar despesa $e");
+    };
+  }
+
+  onTap(Despesa despesa,{String? valor}){
     despesaSelected = despesa.nome;
+    valor = despesaSelected;
+    print(valor);
     tecCodigo.text = despesa.id.toString();
     tecDocumento.text = despesa.nota.toString();
     tecFornecedor.text = despesa.fornecedor!;
@@ -48,5 +92,15 @@ class DespesasController{
         tecData.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
 
       }
+  }
+
+  int maxId(List<Despesa> listdespesas){
+    int maxid = 0;
+    listdespesas.forEach((element) {
+      if(element.id! > maxid){
+        maxid = element.id!;
+      }
+    });
+    return maxid + 1;
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:arcusrev/model/despesa.dart';
 import 'package:arcusrev/model/transporte.dart';
 import 'package:arcusrev/model/usuario.dart';

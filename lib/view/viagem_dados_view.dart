@@ -91,10 +91,10 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
               padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
               child: TextFormField(
                 onTap: () async{
-                  await viagemCadastroController.setDateSaida(context);
+                  await viagemCadastroController.setDateSaida(context,tipo: widget.tipo,viagem: widget.viagemSelected);
                 },
                 onChanged: (value) {
-                  viagemCadastroController.tecDatasaida.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDate,"dd/MM/yyyy");
+                  viagemCadastroController.tecDatasaida.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateSaida,"dd/MM/yyyy");
                 },
                 controller: viagemCadastroController.tecDatasaida,
                 decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Saida"),
@@ -105,10 +105,10 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
               padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
               child: TextFormField(
                 onTap: () async{
-                  await viagemCadastroController.setDateChegada(context);
+                  await viagemCadastroController.setDateChegada(context,tipo: widget.tipo,viagem: widget.viagemSelected);
                 },
                 onChanged: (value) {
-                  viagemCadastroController.tecDatachegada.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDate,"dd/MM/yyyy");
+                  viagemCadastroController.tecDatachegada.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateChegada,"dd/MM/yyyy");
                 },
                 controller: viagemCadastroController.tecDatachegada,
                 decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Chegada"),

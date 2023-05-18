@@ -1,16 +1,24 @@
 import 'package:arcusrev/controller/despesas_controller.dart';
+import 'package:arcusrev/controller/viagem_controller.dart';
 import 'package:arcusrev/model/usuario.dart';
 import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
 import 'package:arcusrev/widgets/alertdialog_widget.dart';
+import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DespesasView extends StatefulWidget {
   Viagem viagemSelected;
   Usuario usuarioLogado;
-  DespesasView(this.usuarioLogado,this.viagemSelected,{Key? key}) : super(key: key);
+  ViagemController viagemController;
+  DespesasView(
+      this.usuarioLogado,
+      this.viagemSelected,
+      this.viagemController,
+      {Key? key}) : super(key: key);
 
   @override
   State<DespesasView> createState() => _DespesasViewState();
@@ -21,7 +29,7 @@ class _DespesasViewState extends State<DespesasView> {
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
   AlertDialogWidget alertDialogWidget = AlertDialogWidget();
-  
+  CircularProgressWidget circularProgressWidget = CircularProgressWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +40,12 @@ class _DespesasViewState extends State<DespesasView> {
             IconButton(
                 onPressed: () {
                   despesasController.clearAll();
+                  despesasController.tecCodigo.text = despesasController.maxId(widget.viagemSelected.despesas).toString();
                   alertDialogWidget.adwDespesas(
                       context,
                       "Despesas",
                       despesasController.despesas,
-                      despesasController.despesaSelected,
+                      //selected: despesasController.despesaSelected,
                       tec1:despesasController.tecCodigo,
                       labelText1: "Código",
                       tec2:despesasController.tecFornecedor,
@@ -45,8 +54,15 @@ class _DespesasViewState extends State<DespesasView> {
                       labelText3: "Localidade",
                       tec4: despesasController.tecDocumento,
                       labelText4: "Nota",
-                      tec5: despesasController.tecValor,
-                      labelText5: "Valor",
+                      textFormField5: TextFormField(
+                        onTap: () {
+
+                        },
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                        controller: despesasController.tecValor,
+                        decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
+                        keyboardType: TextInputType.numberWithOptions(),
+                      ),
                       textFormField6: TextFormField(
                         onTap: () async{
                           await despesasController.setDate(context);
@@ -59,8 +75,25 @@ class _DespesasViewState extends State<DespesasView> {
                         keyboardType: TextInputType.none
                         ,
                       ),
-                      botao1: elevatedButtonWidget.botaoExcluir(),
-                      botao2: elevatedButtonWidget.botaoSalvar()
+                      //botao1: elevatedButtonWidget.botaoExcluir(),
+                      botao2: ElevatedButton.icon(
+                          onPressed: () async{
+                            circularProgressWidget.showCircularProgress(context);
+                            await despesasController.insertDespesas(
+                                widget.viagemSelected.id!,
+                                listdespesas: widget.viagemSelected.despesas,
+                                valor: alertDialogWidget.valor);
+                            await widget.viagemController.getAll();
+                            circularProgressWidget.hideCircularProgress(context);
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                          icon: Icon(Icons.save_outlined),
+                          label: Text('Salvar'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.lightGreen,
+                          )
+                      )
                   );
                 },
                 icon: Icon(Icons.add)
@@ -106,11 +139,12 @@ class _DespesasViewState extends State<DespesasView> {
                         ),
                         onTap: () {
                           despesasController.onTap(widget.viagemSelected.despesas[index]);
+                          alertDialogWidget.valor = despesasController.despesaSelected;
                           alertDialogWidget.adwDespesas(
                               context,
                               "Despesas",
                               despesasController.despesas,
-                              despesasController.despesaSelected,
+                              // valor: despesasController.despesaSelected,
                               tec1:despesasController.tecCodigo,
                               labelText1: "Código",
                               tec2:despesasController.tecFornecedor,
@@ -119,8 +153,12 @@ class _DespesasViewState extends State<DespesasView> {
                               labelText3: "Localidade",
                               tec4: despesasController.tecDocumento,
                               labelText4: "Nota",
-                              tec5: despesasController.tecValor,
-                              labelText5: "Valor",
+                              textFormField5: TextFormField(
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                                controller: despesasController.tecValor,
+                                decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
+                                keyboardType: TextInputType.numberWithOptions(),
+                              ),
                               textFormField6: TextFormField(
                                 onTap: () async{
                                   await despesasController.setDate(context,despesa: widget.viagemSelected.despesas[index]);
@@ -132,8 +170,41 @@ class _DespesasViewState extends State<DespesasView> {
                                 decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data"),
                                 keyboardType: TextInputType.none
                               ),
-                              botao1: elevatedButtonWidget.botaoExcluir(),
-                              botao2: elevatedButtonWidget.botaoSalvar()
+                              botao1: ElevatedButton.icon(
+                                  onPressed: () async{
+                                    circularProgressWidget.showCircularProgress(context);
+                                    await despesasController.deleteDespesas(
+                                        widget.viagemSelected.despesas[index],
+                                        widget.viagemSelected.id!);
+                                    await widget.viagemController.getAll();
+                                    circularProgressWidget.hideCircularProgress(context);
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.save_outlined),
+                                  label: Text('Excluir'),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.redAccent,
+                                  )
+                              ),
+                              botao2: ElevatedButton.icon(
+                                  onPressed: () async{
+                                    circularProgressWidget.showCircularProgress(context);
+                                    await despesasController.updateDespesas(
+                                        widget.viagemSelected.despesas[index],
+                                        widget.viagemSelected.id!);
+                                    print(widget.viagemSelected.despesas[index].valor);
+                                    await widget.viagemController.getAll();
+                                    circularProgressWidget.hideCircularProgress(context);
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.save_outlined),
+                                  label: Text('Salvar'),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.lightGreen,
+                                  )
+                              )
                           );
                         },
                       ),

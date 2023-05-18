@@ -28,8 +28,9 @@ class Despesa {
     valor = json['VALOR'];
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({int? viagem}) {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['VIAGEM'] = viagem;
     data['ID'] = this.id;
     data['NOME'] = this.nome;
     data['DATA'] = DataFormatoUtil.getDate(this.data, DataFormatoUtil.formatInsertFirebird);

@@ -26,7 +26,9 @@
 								parnome = :MOTORISTA, 
 								VIADESTINO = :DESTINO,
 								VIAFINALIDADE = :FINALIDADE,
-								TRACODIGO = :TRANSPORTE
+								TRACODIGO = :TRANSPORTE,
+								VIADATSAIDA = :DATASAIDA,
+								VIADATREGRESSO = :DATAREGRESSO
 							where viacodigo = :ID
 						</data>				
 					</update>
@@ -74,10 +76,63 @@
 				</viagem>
 				<despesa>
 					<delete>
-						delete from rvidespesa where viacodigo = :ID
+						<data>
+							delete from rvidespesa where viacodigo = :ID
+						</data>
 					</delete>
 				</despesa>
 			</deleta_viagem>
+			<cadastra_despesa>
+				<insercao>
+					<insert>
+						<data>
+							INSERT INTO RVIDESPESA(
+								VIACODIGO, 
+								DESCODIGO, 
+								DESNOME, 
+								DESDATA, 
+								DESNOTA, 
+								DESFORNECEDOR, 
+								DESLOCAL, 
+								DESVALOR) 
+							VALUES(
+								:VIAGEM, 
+								(select coalesce(max(descodigo),0) + 1 from rvidespesa where viacodigo = :VIAGEM), 
+								:NOME, 
+								:DATA, 
+								:NOTA, 
+								:FORNECEDOR, 
+								:LOCAL, 
+								:VALOR);
+						</data>
+					</insert>
+				</insercao>
+			</cadastra_despesa>
+			<atualiza_despesa>
+				<despesa>
+					<update>
+						<data>
+							update rviviagem set 
+								parnome = :MOTORISTA, 
+								VIADESTINO = :DESTINO,
+								VIAFINALIDADE = :FINALIDADE,
+								TRACODIGO = :TRANSPORTE,
+								VIADATSAIDA = :DATASAIDA,
+								VIADATREGRESSO = :DATAREGRESSO
+							where viacodigo = :ID
+						</data>				
+					</update>
+				</despesa>
+			</atualiza_despesa>
+			<deleta_despesa>
+				<despesa>
+					<delete>
+						<data>
+							delete from rvidespesa where viacodigo = :VIAGEM and descodigo = :ID
+						</data>
+					</delete>
+				</despesa>
+			</deleta_despesa>
 			<getall>
 				<viagem>
 					<data>

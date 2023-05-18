@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 class AlertDialogWidget{
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
-  adwDespesas(BuildContext context,String title,List list,Object? selected,
+  String? valor;
+  adwDespesas(BuildContext context,String title,List<String> list,
       {Widget? botao1,Widget? botao2,TextEditingController? tec1,String? labelText1,
         TextEditingController? tec2,String? labelText2,
         TextEditingController? tec3,String? labelText3,
         TextEditingController? tec4,String? labelText4,
-        TextEditingController? tec5,String? labelText5,
+        TextFormField? textFormField5,
         TextFormField? textFormField6,
       })
   {
@@ -29,21 +30,22 @@ class AlertDialogWidget{
                           padding: const EdgeInsets.only(right:8.0),
                           child: SizedBox(
                             width: 80,
-                            child: textFormFieldWidget.criaTff(tec1!, labelText1!,ativo: false),
+                            child: textFormFieldWidget.criaTff(tec1!, labelText1!,ativo: false,numeric: true),
                           ),
                         ),
                         Expanded(
                           child: DropdownButton(
                             isExpanded: true,
                             hint: Text("Transporte"),
-                            value: selected,
+                            value: valor,
                             items: list.map((e) {
                               return DropdownMenuItem(
                                   value: e,
                                   child: Text('${e}'));
                             }).toList(),
                             onChanged: (value) {
-                              selected = value;
+                              valor = value.toString();
+                              print(valor);
                               setState(() {});
                             },
                           ),
@@ -73,13 +75,13 @@ class AlertDialogWidget{
                       children: [
                         SizedBox(
                           width: 100,
-                          child: textFormFieldWidget.criaTff(tec4!, labelText4!),
+                          child: textFormFieldWidget.criaTff(tec4!, labelText4!,numeric: true),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left:8.0,right: 8),
                           child: SizedBox(
                             width: 120,
-                            child: textFormFieldWidget.criaTff(tec5!, labelText5!),
+                            child: textFormField5,
                           ),
                         ),
                         SizedBox(
@@ -94,7 +96,7 @@ class AlertDialogWidget{
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        botao1!,
+                        botao1 ?? Container() ,
                         botao2!
                       ],
                     ),
