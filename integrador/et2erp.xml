@@ -148,7 +148,7 @@
 							r.viadatsaida as datasaida,
 							r.viadatregresso as dataregresso,
 							r.parcodigoinc as responsavel,
-							coalesce(r.viaobservacao,'') as observacao
+							coalesce(r.viaobservacao,'Sem observação') as observacao
 						from rviviagem r
 						order by r.viacodigo desc
 					</data>

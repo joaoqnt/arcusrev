@@ -6,6 +6,7 @@ import 'package:arcusrev/utils/dataformato_util.dart';
 import 'package:arcusrev/widgets/alertdialog_widget.dart';
 import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
+import 'package:arcusrev/widgets/pdf_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,7 @@ class _DespesasViewState extends State<DespesasView> {
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
   AlertDialogWidget alertDialogWidget = AlertDialogWidget();
   CircularProgressWidget circularProgressWidget = CircularProgressWidget();
+  PdfWidget pdfWidget = PdfWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +99,12 @@ class _DespesasViewState extends State<DespesasView> {
                   );
                 },
                 icon: Icon(Icons.add)
-            )
+            ),
+            IconButton(
+                onPressed: () {
+                  pdfWidget.gerarRelatorio(viagem: widget.viagemSelected);
+                },
+                icon: Icon(Icons.picture_as_pdf))
           ]
       ),
       body: Column(
@@ -144,7 +151,6 @@ class _DespesasViewState extends State<DespesasView> {
                               context,
                               "Despesas",
                               despesasController.despesas,
-                              // valor: despesasController.despesaSelected,
                               tec1:despesasController.tecCodigo,
                               labelText1: "Código",
                               tec2:despesasController.tecFornecedor,
@@ -192,8 +198,8 @@ class _DespesasViewState extends State<DespesasView> {
                                     circularProgressWidget.showCircularProgress(context);
                                     await despesasController.updateDespesas(
                                         widget.viagemSelected.despesas[index],
-                                        widget.viagemSelected.id!);
-                                    print(widget.viagemSelected.despesas[index].valor);
+                                        widget.viagemSelected.id!,
+                                        valor: alertDialogWidget.valor);
                                     await widget.viagemController.getAll();
                                     circularProgressWidget.hideCircularProgress(context);
                                     Navigator.of(context).pop();

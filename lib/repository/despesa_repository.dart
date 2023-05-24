@@ -31,7 +31,6 @@ class DespesaRepository{
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
-      print(despesaEncoded);
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_despesa',
           options: Options(headers:{
@@ -41,7 +40,7 @@ class DespesaRepository{
           data: despesaEncoded
       );
       if(response.statusCode == 200){
-        print("salvou");
+        print("salvou despesa");
       }
     }catch(e){
       print("erro ao atualizar despesa $e");

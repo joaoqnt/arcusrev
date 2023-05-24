@@ -59,7 +59,6 @@ class _ViagensViewState extends State<ViagensView> {
                       child: InkWell(
                         onTap: (){
                           viagemController.viagemSelected = viagemController.viagens[index];
-                          print(viagemController.viagemSelected!.toJson());
                           Navigator.push(
                               context, MaterialPageRoute(builder: (BuildContext) => DespesasView(
                               widget.usuarioLogado,

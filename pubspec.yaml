@@ -38,6 +38,10 @@ dependencies:
   dio: ^5.0.3
   intl: ^0.17.0
   flutter_masked_text2: any
+  pdf: ^3.10.1
+  path_provider: ^2.0.15
+  open_file: ^3.3.1
+  printing: ^5.10.4
 
 dev_dependencies:
   flutter_test:

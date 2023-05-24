@@ -112,14 +112,15 @@
 				<despesa>
 					<update>
 						<data>
-							update rviviagem set 
-								parnome = :MOTORISTA, 
-								VIADESTINO = :DESTINO,
-								VIAFINALIDADE = :FINALIDADE,
-								TRACODIGO = :TRANSPORTE,
-								VIADATSAIDA = :DATASAIDA,
-								VIADATREGRESSO = :DATAREGRESSO
-							where viacodigo = :ID
+							UPDATE RVIDESPESA SET 
+								DESNOME = :NOME,
+								DESDATA = :DATA,
+								DESNOTA = :NOTA,
+								DESFORNECEDOR = :FORNECEDOR,
+								DESLOCAL = :LOCAL,
+								DESVALOR = :VALOR
+							WHERE VIACODIGO = :VIAGEM 
+								AND DESCODIGO = :ID
 						</data>				
 					</update>
 				</despesa>

@@ -17,7 +17,8 @@ class DespesasController{
   String? despesaSelected;
   DateTime? selectedDate;
 
-  alteraDados(Despesa despesa){
+  alteraDados(Despesa despesa,{String? valor}){
+    despesaSelected = valor;
     selectedDate == null ? null : despesa.data = selectedDate;
     despesa.valor = double.tryParse(tecValor.text);
     despesa.nome = despesaSelected;
@@ -38,8 +39,8 @@ class DespesasController{
     despesaRepository.insertDespesa(despesa,viagem: viagem);
   }
 
-  updateDespesas(Despesa despesa, int viagem){
-    alteraDados(despesa);
+  updateDespesas(Despesa despesa, int viagem,{String? valor}){
+    alteraDados(despesa,valor: valor);
     print(despesa.toJson(viagem: viagem));
     try{
       despesaRepository.updateDespesa(despesa, viagem);
