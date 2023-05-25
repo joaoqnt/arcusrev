@@ -54,7 +54,7 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: textFormFieldWidget.criaTff(viagemCadastroController.tecMotorista, "Motorista"),
+              child: textFormFieldWidget.criaTff(viagemCadastroController.tecMotorista, "Funcionário"),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
@@ -118,6 +118,21 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                widget.tipo == 'I' ? Container() :
+                ElevatedButton.icon(
+                    onPressed: () async{
+                      circularProgressWidget.showCircularProgress(context);
+                      await viagemCadastroController.deleteViagem(widget.viagemSelected!,widget.viagemController!);
+                      await widget.viagemController!.getAll();
+                      circularProgressWidget.hideCircularProgress(context);
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.delete_outline),
+                    label: Text('Excluir'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.redAccent,
+                    )
+                ),
                 ElevatedButton.icon(
                     onPressed: () async{
                       circularProgressWidget.showCircularProgress(context);
@@ -133,21 +148,6 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                       primary: Colors.lightGreen,
                     )
                 ),
-                widget.tipo == 'I' ? Container() :
-                ElevatedButton.icon(
-                    onPressed: () async{
-                      circularProgressWidget.showCircularProgress(context);
-                      await viagemCadastroController.deleteViagem(widget.viagemSelected!,widget.viagemController!);
-                      await widget.viagemController!.getAll();
-                      circularProgressWidget.hideCircularProgress(context);
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(Icons.delete_outline),
-                    label: Text('Excluir'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.redAccent,
-                    )
-                )
               ],
             )
           ],

@@ -27,16 +27,18 @@ class DespesasController{
     despesa.fornecedor = tecFornecedor.text;
   }
 
-  insertDespesas(int viagem,{List<Despesa>? listdespesas, String? valor}){
+  insertDespesas(Viagem viagem,{String? valor}){
     despesaSelected = valor;
     Despesa despesa = Despesa();
+    despesa.id = maxId(viagem.despesas);
     despesa.data = selectedDate;
     despesa.nome = despesaSelected;
     despesa.nota = int.tryParse(tecDocumento.text);
     despesa.local = tecLocalidade.text;
     despesa.valor = double.tryParse(tecValor.text);
     despesa.fornecedor = tecFornecedor.text;
-    despesaRepository.insertDespesa(despesa,viagem: viagem);
+    despesaRepository.insertDespesa(despesa,viagem.id!);
+    viagem.despesas.add(despesa);
   }
 
   updateDespesas(Despesa despesa, int viagem,{String? valor}){
@@ -50,9 +52,10 @@ class DespesasController{
     }
   }
 
-  deleteDespesas(Despesa despesa, int viagem){
+  deleteDespesas(Viagem viagem, int index){
     try{
-      despesaRepository.deleteDespesa(despesa, viagem);
+      despesaRepository.deleteDespesa(viagem, index);
+      viagem.despesas.remove(viagem.despesas[index]);
     }catch(e){
       print("erro ao deletar despesa $e");
     };

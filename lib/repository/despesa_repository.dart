@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:arcusrev/model/despesa.dart';
+import 'package:arcusrev/model/viagem.dart';
 import 'package:dio/dio.dart';
 
 class DespesaRepository{
 
-  Future<bool> insertDespesa(Despesa despesa,{int? viagem}) async {
+  Future<bool> insertDespesa(Despesa despesa, int viagem) async {
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
@@ -47,10 +48,10 @@ class DespesaRepository{
     }
   }
 
-  Future deleteDespesa(Despesa despesa, int viagem) async{
+  Future deleteDespesa(Viagem viagem,int index) async{
     var http = Dio();
     try{
-      String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
+      String despesaEncoded = jsonEncode({"1" : [viagem.despesas[index].toJson(viagem: viagem.id)]});
       print(despesaEncoded);
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/deleta_despesa',

@@ -8,6 +8,7 @@ import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:arcusrev/widgets/pdf_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -57,9 +58,6 @@ class _DespesasViewState extends State<DespesasView> {
                       tec4: despesasController.tecDocumento,
                       labelText4: "Nota",
                       textFormField5: TextFormField(
-                        onTap: () {
-
-                        },
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
                         controller: despesasController.tecValor,
                         decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
@@ -82,13 +80,14 @@ class _DespesasViewState extends State<DespesasView> {
                           onPressed: () async{
                             circularProgressWidget.showCircularProgress(context);
                             await despesasController.insertDespesas(
-                                widget.viagemSelected.id!,
-                                listdespesas: widget.viagemSelected.despesas,
+                                widget.viagemSelected,
                                 valor: alertDialogWidget.valor);
+                            // setState(() {});
                             await widget.viagemController.getAll();
                             circularProgressWidget.hideCircularProgress(context);
                             Navigator.of(context).pop();
-                            Navigator.of(context).pop();
+                            setState(() {});
+                            // Navigator.of(context).pop();
                           },
                           icon: Icon(Icons.save_outlined),
                           label: Text('Salvar'),
@@ -139,8 +138,11 @@ class _DespesasViewState extends State<DespesasView> {
                                     ],
                                   )),
                               ),
-                              Text("R\$: ${widget.viagemSelected.despesas[index].valor}",
-                                style: TextStyle(color: Colors.green),)
+                              Padding(
+                                padding: const EdgeInsets.only(right:8.0),
+                                child: Text(UtilBrasilFields.obterReal(widget.viagemSelected.despesas[index].valor!),
+                                  style: TextStyle(color: Colors.green),),
+                              )
                             ],
                           ),
                         ),
@@ -180,11 +182,13 @@ class _DespesasViewState extends State<DespesasView> {
                                   onPressed: () async{
                                     circularProgressWidget.showCircularProgress(context);
                                     await despesasController.deleteDespesas(
-                                        widget.viagemSelected.despesas[index],
-                                        widget.viagemSelected.id!);
+                                        widget.viagemSelected,
+                                        index
+                                    );
+                                    // setState(() {});
                                     await widget.viagemController.getAll();
                                     circularProgressWidget.hideCircularProgress(context);
-                                    Navigator.of(context).pop();
+                                    setState(() {});
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.save_outlined),
@@ -200,9 +204,11 @@ class _DespesasViewState extends State<DespesasView> {
                                         widget.viagemSelected.despesas[index],
                                         widget.viagemSelected.id!,
                                         valor: alertDialogWidget.valor);
+                                    // setState(() {});
                                     await widget.viagemController.getAll();
                                     circularProgressWidget.hideCircularProgress(context);
-                                    Navigator.of(context).pop();
+                                    // Navigator.of(context).pop();
+                                    setState(() {});
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.save_outlined),
