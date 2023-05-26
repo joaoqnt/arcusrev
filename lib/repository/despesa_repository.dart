@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 
 class DespesaRepository{
 
-  Future<bool> insertDespesa(Despesa despesa, int viagem) async {
+  Future<bool> insertDespesa(Despesa despesa, int viagem,String cnpj) async {
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
@@ -14,7 +14,7 @@ class DespesaRepository{
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/cadastra_despesa',
           options: Options(headers:{
-            'tenant': 'arcusrev_25650383000174',
+            'tenant': 'arcusrev_$cnpj',
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: despesaEncoded
@@ -28,14 +28,14 @@ class DespesaRepository{
     return true;
   }
 
-  Future updateDespesa(Despesa despesa, int viagem) async{
+  Future updateDespesa(Despesa despesa, int viagem, String cnpj) async{
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_despesa',
           options: Options(headers:{
-            'tenant': 'arcusrev_25650383000174',
+            'tenant': 'arcusrev_$cnpj',
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: despesaEncoded
@@ -48,7 +48,7 @@ class DespesaRepository{
     }
   }
 
-  Future deleteDespesa(Viagem viagem,int index) async{
+  Future deleteDespesa(Viagem viagem,int index, String cnpj) async{
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [viagem.despesas[index].toJson(viagem: viagem.id)]});
@@ -56,7 +56,7 @@ class DespesaRepository{
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/deleta_despesa',
           options: Options(headers:{
-            'tenant': 'arcusrev_25650383000174',
+            'tenant': 'arcusrev_$cnpj',
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: despesaEncoded

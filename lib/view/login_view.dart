@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:arcusrev/controller/login_controller.dart';
 import 'package:arcusrev/view/viagens_view.dart';
 import 'package:arcusrev/widgets/circularprogress_widget.dart';
+import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {
@@ -15,6 +14,8 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   LoginController loginController = LoginController();
   CircularProgressWidget circularProgressWidget = CircularProgressWidget();
+  TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,46 +40,58 @@ class _LoginViewState extends State<LoginView> {
                       )
                     ]
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(
-                          labelText: "Usuário",
-                          border: OutlineInputBorder()),
-                      controller: loginController.tecUsuario,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            labelText: "Senha",
-                            border: OutlineInputBorder()),
-                        controller: loginController.tecSenha,
+                child: Form(
+                  key: loginController.formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      textFormFieldWidget.criaTff(loginController.tecUsuario, "Usuário",tamanho: 15),
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
+                        child: textFormFieldWidget.criaTff(
+                            loginController.tecSenha,
+                            "Senha",
+                            tamanho: 10,
+                            password: true,
+                            visible: !loginController.isVisible,
+                            icone: IconButton(
+                                onPressed: (){
+                                  loginController.hidePassword();
+                                  setState(() {});
+                                },
+                                icon: loginController.isVisible == false ?
+                                Icon(Icons.visibility) : Icon(Icons.visibility_off))),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: InkWell(
-                              child: Container(
-                                alignment: Alignment.center,
-                                constraints: BoxConstraints(minHeight: 50),
-                                decoration: BoxDecoration(color: Colors.blueAccent),
-                                child: Text("Entrar",style: TextStyle(color: Colors.white,fontSize: 18))),
-                              onTap: () async{
-                                circularProgressWidget.showCircularProgress(context);
-                                await loginController.doLogin();
-                                circularProgressWidget.hideCircularProgress(context);
-                                loginController.existe == false ? null : Navigator.push(
-                                   context, MaterialPageRoute(builder: (BuildContext) => ViagensView(loginController.usuarioLogado!)
-                               ));
-                              },
-                            )
-                        )
-                      ],
-                    )
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
+                        child: textFormFieldWidget.criaTff(loginController.tecEmpresa, "Cnpj da empresa",tamanho: 14),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: InkWell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(minHeight: 50),
+                                  decoration: BoxDecoration(color: Colors.blueAccent),
+                                  child: Text("Entrar",style: TextStyle(color: Colors.white,fontSize: 18))),
+                                onTap: () async{
+                                  if (loginController.formKey.currentState!.validate() ) {
+                                    circularProgressWidget.showCircularProgress(context);
+                                    await loginController.doLogin();
+                                    circularProgressWidget.hideCircularProgress(context);
+                                    loginController.existe == false ? null : Navigator.push(
+                                        context, MaterialPageRoute(builder: (BuildContext) =>
+                                        ViagensView(loginController.usuarioLogado!,loginController.tecEmpresa.text)
+                                    ));
+                                  }
+                                },
+                              )
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -1,21 +1,22 @@
 import 'package:arcusrev/model/transporte.dart';
-import 'package:arcusrev/model/usuario.dart';
 import 'package:arcusrev/model/viagem.dart';
-import 'package:arcusrev/repository/usuario_repository.dart';
 import 'package:arcusrev/repository/viagem_repository.dart';
 import 'package:flutter/material.dart';
 
 class ViagemController{
   List<Viagem> viagens = [];
+  List<Viagem> viagensOriginal = [];
   List<Transporte> transportes = [];
   ViagemRepository viagemRepository = ViagemRepository();
   Transporte? transporteSelecionado;
   Viagem? viagemSelected;
   double valorTotal = 0;
+  TextEditingController tecBusca = TextEditingController();
 
 
-  Future<bool> getAll() async{
-    viagens = await viagemRepository.getAll();
+  Future<bool> getAll(String cnpj) async{
+    viagensOriginal = await viagemRepository.getAll(cnpj);
+    viagens = viagensOriginal;
     return true;
   }
 
@@ -31,5 +32,21 @@ class ViagemController{
       }
     });
     return maxId + 1;
+  }
+
+  double getTotal(Viagem viagem){
+    double soma = 0;
+
+    viagem.despesas.forEach((element) {
+      soma += element.valor!;
+    });
+
+    return soma;
+  }
+
+  void filterOs(String? busca){
+    viagens = viagensOriginal.where((element) =>
+    element.id.toString().contains(busca.toString()) ||
+        element.motorista!.toLowerCase().contains(busca!.toLowerCase())).toList();
   }
 }

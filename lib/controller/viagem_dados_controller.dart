@@ -21,10 +21,11 @@ class ViagemDadosController{
   Transporte? transporteSelected;
   DateTime? selectedDateSaida;
   DateTime? selectedDateChegada;
+  final formKey = GlobalKey<FormState>();
 
-  Future updateViagem(Viagem viagem,ViagemController viagemController) async{
+  Future updateViagem(Viagem viagem,ViagemController viagemController, String cnpj) async{
     alteraDados(viagem);
-    await viagemRepository.updateViagem(viagem);
+    await viagemRepository.updateViagem(viagem,cnpj);
     // viagemController.viagens = await viagemRepository.getAll();
   }
   preencheCampos(Viagem viagem){
@@ -46,7 +47,7 @@ class ViagemDadosController{
     selectedDateSaida != null ? viagem.datasaida = selectedDateSaida : selectedDateSaida = viagem.datasaida;
   }
 
-  Future insertViagem(Usuario responsavel, ViagemController viagemController) async{
+  Future insertViagem(Usuario responsavel, ViagemController viagemController, String cnpj) async{
     Viagem viagem = Viagem();
     viagem.id = int.parse(tecId.text);
     viagem.responsavel = responsavel;
@@ -59,7 +60,7 @@ class ViagemDadosController{
     print(viagem.datasaida);
     print(viagem.motorista);
     try{
-      await viagemRepository.insertViagem(viagem);
+      await viagemRepository.insertViagem(viagem,cnpj);
       // viagemController.viagens = await viagemRepository.getAll();
     }catch(e){
       print("erro ao cadastrar viagem $e");
@@ -69,9 +70,9 @@ class ViagemDadosController{
 
 
 
-  Future deleteViagem(Viagem viagem,ViagemController viagemController) async{
+  Future deleteViagem(Viagem viagem,ViagemController viagemController, String cnpj) async{
     try{
-      await viagemRepository.deleteViagem(viagem);
+      await viagemRepository.deleteViagem(viagem,cnpj);
     }catch(e){
       print("erro ao deletar viagem $e");
     }

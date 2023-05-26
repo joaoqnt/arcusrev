@@ -16,6 +16,7 @@ class DespesasController{
   List<String> despesas = ['Combustivel','Hospedagem','Outras','Refeições','Sem comprovante'];
   String? despesaSelected;
   DateTime? selectedDate;
+  final formKey = GlobalKey<FormState>();
 
   alteraDados(Despesa despesa,{String? valor}){
     despesaSelected = valor;
@@ -27,7 +28,7 @@ class DespesasController{
     despesa.fornecedor = tecFornecedor.text;
   }
 
-  insertDespesas(Viagem viagem,{String? valor}){
+  insertDespesas(Viagem viagem,String cnpj,{String? valor}){
     despesaSelected = valor;
     Despesa despesa = Despesa();
     despesa.id = maxId(viagem.despesas);
@@ -37,24 +38,24 @@ class DespesasController{
     despesa.local = tecLocalidade.text;
     despesa.valor = double.tryParse(tecValor.text);
     despesa.fornecedor = tecFornecedor.text;
-    despesaRepository.insertDespesa(despesa,viagem.id!);
+    despesaRepository.insertDespesa(despesa,viagem.id!,cnpj);
     viagem.despesas.add(despesa);
   }
 
-  updateDespesas(Despesa despesa, int viagem,{String? valor}){
+  updateDespesas(Despesa despesa, int viagem,String cnpj,{String? valor}){
     alteraDados(despesa,valor: valor);
     print(despesa.toJson(viagem: viagem));
     try{
-      despesaRepository.updateDespesa(despesa, viagem);
+      despesaRepository.updateDespesa(despesa, viagem,cnpj);
     }catch(e){
       print(despesa.toJson());
       print("erro ao atualizar despesa $e");
     }
   }
 
-  deleteDespesas(Viagem viagem, int index){
+  deleteDespesas(Viagem viagem, int index, String cnpj){
     try{
-      despesaRepository.deleteDespesa(viagem, index);
+      despesaRepository.deleteDespesa(viagem, index,cnpj);
       viagem.despesas.remove(viagem.despesas[index]);
     }catch(e){
       print("erro ao deletar despesa $e");

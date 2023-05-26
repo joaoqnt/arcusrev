@@ -8,20 +8,26 @@ import 'package:dio/dio.dart';
 
 class ViagemRepository{
   List<Transporte> transportes = [];
+  List<Usuario> usuarios = [];
 
-  Future<List<Viagem>> getAll() async{
+  Future<List<Viagem>> getAll(String cnpj) async{
     List<Viagem> viagens = [];
     var http = Dio();
     try{
       transportes.clear();
       Response response = await http.get(
           'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall',
-          options: Options(headers: {'tenant': 'arcusrev_25650383000174'}));
+          options: Options(headers: {'tenant': 'arcusrev_$cnpj'}));
       if(response.statusCode == 200){
         var results = response.data['resultSelects'];
         results['transporte'].forEach((element) async{
           Transporte transporte = Transporte.fromJson(element);
           transportes.add(transporte);
+        });
+        results['funcionarios'].forEach((funcionarios){
+          Usuario usuario = Usuario.fromJson(funcionarios);
+          print(usuario.toJson());
+          usuarios.add(usuario);
         });
         results['viagem'].forEach((element) async{
           Viagem viagem = Viagem.fromJson(element);
@@ -45,7 +51,7 @@ class ViagemRepository{
     return viagens;
   }
 
-  Future updateViagem(Viagem viagem) async{
+  Future updateViagem(Viagem viagem, String cnpj) async{
     var http = Dio();
     try{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
@@ -53,7 +59,7 @@ class ViagemRepository{
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_viagem',
         options: Options(headers:{
-          'tenant': 'arcusrev_25650383000174',
+          'tenant': 'arcusrev_$cnpj',
           HttpHeaders.contentTypeHeader: "application/json",
         }),
         data: viagemEncoded
@@ -66,7 +72,7 @@ class ViagemRepository{
     }
   }
 
-  Future<bool> insertViagem(Viagem viagem) async {
+  Future<bool> insertViagem(Viagem viagem,String cnpj) async {
     var http = Dio();
     try{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
@@ -74,7 +80,7 @@ class ViagemRepository{
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/cadastra_viagem',
           options: Options(headers:{
-            'tenant': 'arcusrev_25650383000174',
+            'tenant': 'arcusrev_$cnpj',
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: viagemEncoded
@@ -88,14 +94,14 @@ class ViagemRepository{
     return true;
   }
 
-  Future deleteViagem(Viagem viagem) async{
+  Future deleteViagem(Viagem viagem, String cnpj) async{
     var http = Dio();
     try{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/deleta_viagem',
           options: Options(headers:{
-            'tenant': 'arcusrev_25650383000174',
+            'tenant': 'arcusrev_$cnpj',
             HttpHeaders.contentTypeHeader: "application/json",
           }),
           data: viagemEncoded

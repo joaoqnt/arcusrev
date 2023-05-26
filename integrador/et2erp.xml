@@ -11,8 +11,8 @@
 							pf.funadministra as administrador
 						from genparcei gp
 							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
-						where cast(pf.parcodigo as varchar(10))  = :PARCODIGO
-							and cast(pf.funsenha as varchar(10)) = :FUNSENHA
+						where cast(pf.funusuario as varchar(15))  = :FUNUSUARIO
+							and cast(pf.funsenhaapp as varchar(10)) = :FUNSENHAAPP
 					</data>
 				</login>
 			</usuario>
@@ -165,6 +165,7 @@
 							d.deslocal as local,
 							d.desvalor as valor
 						from rvidespesa d
+						order by desdata asc, d.descodigo asc
 					</data>
 				</despesa>
 				<transporte>
@@ -172,6 +173,16 @@
 						select t.tracodigo as id, t.tranome as nome from rvitransporte t
 					</data>
 				</transporte>
+				<funcionarios>
+					<data>
+						select
+							pf.parcodigo as id,
+							gp.parnome as nome
+						from genparcei gp
+							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funmotorista = 'S')
+						order by gp.parnome
+					</data>
+				</funcionarios>
 				<responsavel>
 					<data>
 						select

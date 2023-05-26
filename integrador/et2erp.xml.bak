@@ -11,8 +11,8 @@
 							pf.funadministra as administrador
 						from genparcei gp
 							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
-						where cast(pf.parcodigo as varchar(10))  = :PARCODIGO
-							and cast(pf.funsenha as varchar(10)) = :FUNSENHA
+						where cast(pf.funusuario as varchar(15))  = :FUNUSUARIO
+							and cast(pf.funsenhaapp as varchar(10)) = :FUNSENHAAPP
 					</data>
 				</login>
 			</usuario>
@@ -148,7 +148,7 @@
 							r.viadatsaida as datasaida,
 							r.viadatregresso as dataregresso,
 							r.parcodigoinc as responsavel,
-							coalesce(r.viaobservacao,'') as observacao
+							coalesce(r.viaobservacao,'Sem observação') as observacao
 						from rviviagem r
 						order by r.viacodigo desc
 					</data>
@@ -165,6 +165,7 @@
 							d.deslocal as local,
 							d.desvalor as valor
 						from rvidespesa d
+						order by desdata asc, d.descodigo asc
 					</data>
 				</despesa>
 				<transporte>

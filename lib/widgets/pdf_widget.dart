@@ -80,6 +80,10 @@ class PdfWidget {
                     ),
                     pw.Padding(
                         padding: pw.EdgeInsets.only(bottom: 4),
+                        child: pw.Text("Destino:",style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10))
+                    ),
+                    pw.Padding(
+                        padding: pw.EdgeInsets.only(bottom: 4),
                         child: pw.Text("Acompanhante:",style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10))
                     ),
                     pw.Padding(
@@ -116,6 +120,10 @@ class PdfWidget {
                 pw.Padding(
                     padding: pw.EdgeInsets.only(bottom: 4),
                     child: pw.Text("${viagem.finalidade}",style: pw.TextStyle(fontSize: 10))
+                ),
+                pw.Padding(
+                    padding: pw.EdgeInsets.only(bottom: 4),
+                    child: pw.Text("${viagem.destino}",style: pw.TextStyle(fontSize: 10))
                 ),
                 pw.Padding(
                     padding: pw.EdgeInsets.only(bottom: 4),
@@ -174,7 +182,7 @@ class PdfWidget {
                 child: pw.Text('Nota', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
               ),
               pw.Container(
-                width: 160,
+                width: 140,
                 decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
                 child: pw.Text('Fornecedor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
               ),
@@ -187,7 +195,13 @@ class PdfWidget {
               pw.Container(
                 width: 70,
                 decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10))
+                  ]
+                )
+                // pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
               ),
 
             ],
@@ -219,7 +233,7 @@ class PdfWidget {
                               ),
                             ),
                             pw.Container(
-                                width: 160,
+                                width: 140,
                                 child: pw.Text('${viagem.despesas[index].fornecedor}',
                                     style: pw.TextStyle(fontSize: 10))
                             ),
@@ -232,8 +246,13 @@ class PdfWidget {
                             ),
                             pw.Container(
                               width: 70,
-                                child: pw.Text(UtilBrasilFields.obterReal(viagem.despesas[index].valor!),
-                                    style: pw.TextStyle(fontSize: 10)
+                                child: pw.Column(
+                                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                                    children: [
+                                      pw.Text(UtilBrasilFields.obterReal(viagem.despesas[index].valor!),
+                                          style: pw.TextStyle(fontSize: 10)
+                                      )
+                                    ]
                                 )
                             )
                           ]
@@ -280,7 +299,7 @@ class PdfWidget {
 
   _assinatura(){
     return pw.Padding(
-        padding: pw.EdgeInsets.only(top: 40),
+        padding: pw.EdgeInsets.only(top: 80),
         child:       pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
@@ -373,7 +392,7 @@ class PdfWidget {
 
   List<pw.Widget> _addRow(Viagem viagem){
     List<pw.Widget> list = [];
-    List<String> _despesas = ['Combustivel','Hospedagem','Outras','Refeições','Sem comprovante'];
+    List<String> _despesas = ['Hospedagem','Refeições','Combustivel','Outras','Sem comprovante'];
     _despesas.forEach((element) {
       list.add(
           pw.Row(

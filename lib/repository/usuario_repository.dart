@@ -2,14 +2,13 @@ import 'package:arcusrev/model/usuario.dart';
 import 'package:dio/dio.dart';
 
 class UsuarioRepository{
-  Future<Map<String,dynamic>> doLogin(String usuario, String senha) async{
+  Future<Map<String,dynamic>> doLogin(String usuario, String senha, String cnpj) async{
     var http = Dio();
     Map<String,dynamic> mapUsuario = Map();
     try{
-      //print(usuario);
       Response response = await http.get(
-          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/login/usuario?PARCODIGO=${usuario}&FUNSENHA=${senha}',
-          options: Options(headers: {'tenant': 'arcusrev_25650383000174'}));
+          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/login/usuario?FUNUSUARIO=${usuario}&FUNSENHAAPP=${senha}',
+          options: Options(headers: {'tenant': 'arcusrev_$cnpj'}));
       if(response.statusCode == 200){
         var results = response.data['resultSelects'];
         results['login'].forEach((element) async{

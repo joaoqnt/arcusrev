@@ -16,10 +16,12 @@ class DespesasView extends StatefulWidget {
   Viagem viagemSelected;
   Usuario usuarioLogado;
   ViagemController viagemController;
+  String cnpj;
   DespesasView(
       this.usuarioLogado,
       this.viagemSelected,
       this.viagemController,
+      this.cnpj,
       {Key? key}) : super(key: key);
 
   @override
@@ -48,20 +50,35 @@ class _DespesasViewState extends State<DespesasView> {
                       context,
                       "Despesas",
                       despesasController.despesas,
+                      despesasController.formKey,
                       //selected: despesasController.despesaSelected,
                       tec1:despesasController.tecCodigo,
                       labelText1: "Código",
+                      t1: 1,
                       tec2:despesasController.tecFornecedor,
                       labelText2: "Fornecedor",
+                      t2: 50,
                       tec3:despesasController.tecLocalidade,
                       labelText3: "Localidade",
+                      t3: 50,
                       tec4: despesasController.tecDocumento,
+                      t4: 6,
                       labelText4: "Nota",
                       textFormField5: TextFormField(
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
                         controller: despesasController.tecValor,
                         decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
                         keyboardType: TextInputType.numberWithOptions(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty || value.length > 12) {
+                            if(value == null || value.isEmpty ){
+                              return 'O campo não pode ser vazio';
+                            }else{
+                              return 'O tamanho máximo para esse campo é de 12 caracter(es)';
+                            }
+                          }
+                          return null;
+                        },
                       ),
                       textFormField6: TextFormField(
                         onTap: () async{
@@ -72,21 +89,32 @@ class _DespesasViewState extends State<DespesasView> {
                         },
                         controller: despesasController.tecData,
                         decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data"),
-                        keyboardType: TextInputType.none
-                        ,
+                        keyboardType: TextInputType.none,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            if(value == null || value.isEmpty ){
+                              return 'O campo não pode ser vazio';
+                            }
+                          }
+                          return null;
+                        },
                       ),
                       //botao1: elevatedButtonWidget.botaoExcluir(),
                       botao2: ElevatedButton.icon(
+
                           onPressed: () async{
-                            circularProgressWidget.showCircularProgress(context);
-                            await despesasController.insertDespesas(
-                                widget.viagemSelected,
-                                valor: alertDialogWidget.valor);
-                            // setState(() {});
-                            await widget.viagemController.getAll();
-                            circularProgressWidget.hideCircularProgress(context);
-                            Navigator.of(context).pop();
-                            setState(() {});
+                            if (alertDialogWidget.formKey.currentState!.validate()){
+                              circularProgressWidget.showCircularProgress(context);
+                              await despesasController.insertDespesas(
+                                  widget.viagemSelected,
+                                  widget.cnpj,
+                                  valor: alertDialogWidget.valor);
+                              // setState(() {});
+                              await widget.viagemController.getAll(widget.cnpj);
+                              circularProgressWidget.hideCircularProgress(context);
+                              Navigator.of(context).pop();
+                              setState(() {});
+                            }
                             // Navigator.of(context).pop();
                           },
                           icon: Icon(Icons.save_outlined),
@@ -100,7 +128,7 @@ class _DespesasViewState extends State<DespesasView> {
                 icon: Icon(Icons.add)
             ),
             IconButton(
-                onPressed: () {
+                onPressed: () async {
                   pdfWidget.gerarRelatorio(viagem: widget.viagemSelected);
                 },
                 icon: Icon(Icons.picture_as_pdf))
@@ -153,6 +181,7 @@ class _DespesasViewState extends State<DespesasView> {
                               context,
                               "Despesas",
                               despesasController.despesas,
+                              despesasController.formKey,
                               tec1:despesasController.tecCodigo,
                               labelText1: "Código",
                               tec2:despesasController.tecFornecedor,
@@ -183,10 +212,11 @@ class _DespesasViewState extends State<DespesasView> {
                                     circularProgressWidget.showCircularProgress(context);
                                     await despesasController.deleteDespesas(
                                         widget.viagemSelected,
-                                        index
+                                        index,
+                                        widget.cnpj
                                     );
                                     // setState(() {});
-                                    await widget.viagemController.getAll();
+                                    await widget.viagemController.getAll(widget.cnpj);
                                     circularProgressWidget.hideCircularProgress(context);
                                     setState(() {});
                                     Navigator.of(context).pop();
@@ -203,11 +233,10 @@ class _DespesasViewState extends State<DespesasView> {
                                     await despesasController.updateDespesas(
                                         widget.viagemSelected.despesas[index],
                                         widget.viagemSelected.id!,
+                                        widget.cnpj,
                                         valor: alertDialogWidget.valor);
-                                    // setState(() {});
-                                    await widget.viagemController.getAll();
-                                    circularProgressWidget.hideCircularProgress(context);
-                                    // Navigator.of(context).pop();
+                                    await widget.viagemController.getAll(widget.cnpj);
+                                    circularProgressWidget.hideCircularProgress(context);                                     // Navigator.of(context).pop();
                                     setState(() {});
                                     Navigator.of(context).pop();
                                   },
