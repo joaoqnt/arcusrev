@@ -23,7 +23,7 @@ class DespesasController{
     selectedDate == null ? null : despesa.data = selectedDate;
     despesa.valor = double.tryParse(tecValor.text);
     despesa.nome = despesaSelected;
-    despesa.nota = int.tryParse(tecDocumento.text);
+    despesa.nota = tecDocumento.text;
     despesa.local = tecLocalidade.text;
     despesa.fornecedor = tecFornecedor.text;
   }
@@ -34,7 +34,7 @@ class DespesasController{
     despesa.id = maxId(viagem.despesas);
     despesa.data = selectedDate;
     despesa.nome = despesaSelected;
-    despesa.nota = int.tryParse(tecDocumento.text);
+    despesa.nota = tecDocumento.text;
     despesa.local = tecLocalidade.text;
     despesa.valor = double.tryParse(tecValor.text);
     despesa.fornecedor = tecFornecedor.text;

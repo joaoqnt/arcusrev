@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import '../model/despesa.dart';
 import '../utils/dataformato_util.dart';
 
 class PdfWidget {
@@ -157,135 +158,136 @@ class PdfWidget {
   }
 
   tableOfPdf(Viagem viagem) {
-    return pw.Column(
-        children:[
-          pw.Row(
-              children:[
-                pw. Expanded(child: pw.Divider())
-              ]
-          ),
-          pw.Row(
-            children: [
-              pw.Container(
-                width: 70,
-                decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Text('Despesas', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-              ),
-              pw.Container(
-                width: 60,
-                decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Text('Data', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-              ),
-              pw.Container(
-                width: 40,
-                decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Text('Nota', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-              ),
-              pw.Container(
-                width: 140,
-                decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Text('Fornecedor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-              ),
-              pw.Expanded(
-                  child: pw.Container(
+    return pw.Container(
+      child: pw.Column(
+          children:[
+            pw.Row(
+                children:[
+                  pw. Expanded(child: pw.Divider())
+                ]
+            ),
+            pw.Row(
+              children: [
+                pw.Container(
+                  width: 70,
+                  decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
+                  child: pw.Text('Despesas', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                ),
+                pw.Container(
+                  width: 60,
+                  decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
+                  child: pw.Text('Data', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                ),
+                pw.Container(
+                  width: 40,
+                  decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
+                  child: pw.Text('Nota', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                ),
+                pw.Container(
+                  width: 140,
+                  decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
+                  child: pw.Text('Fornecedor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                ),
+                pw.Expanded(
+                    child: pw.Container(
+                      decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
+                      child: pw.Text('Localidade', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                    )
+                ),
+                pw.Container(
+                    width: 70,
                     decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                    child: pw.Text('Localidade', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-                  )
-              ),
-              pw.Container(
-                width: 70,
-                decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(width: 1))),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.center,
-                  children: [
-                    pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10))
-                  ]
-                )
-                // pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
-              ),
+                    child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10))
+                        ]
+                    )
+                  // pw.Text('Valor', style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)),
+                ),
 
-            ],
-          ),
-          pw.ListView.builder(
-              itemCount: viagem.despesas.length,
-              itemBuilder: (context, index) {
-                return
-                  pw.Padding(
-                      padding: pw.EdgeInsets.only(bottom: 8,top: index == 0 ? 8 : 0),
-                      child: pw.Row(
-                          children: [
-                            pw.Container(
-                              width: 70,
-                              child: pw.Text('${viagem.despesas[index].nome}',
-                                  style: pw.TextStyle(fontSize: 10)
+              ],
+            ),
+            pw.ListView.builder(
+                itemCount: viagem.despesas.length,
+                itemBuilder: (context, index) {
+                  return
+                    pw.Padding(
+                        padding: pw.EdgeInsets.only(bottom: 8,top: index == 0 ? 8 : 0),
+                        child: pw.Row(
+                            children: [
+                              pw.Container(
+                                width: 70,
+                                child: pw.Text('${viagem.despesas[index].nome}',
+                                    style: pw.TextStyle(fontSize: 10)
+                                ),
                               ),
-                            ),
-                            pw.Container(
-                              width: 60,
-                              child: pw.Text('${DataFormatoUtil.getDate(viagem.despesas[index].data, 'dd/MM/yyyy')}',
-                                  style: pw.TextStyle(fontSize: 10)
+                              pw.Container(
+                                width: 60,
+                                child: pw.Text('${DataFormatoUtil.getDate(viagem.despesas[index].data, 'dd/MM/yyyy')}',
+                                    style: pw.TextStyle(fontSize: 10)
+                                ),
                               ),
-                            ),
-                            pw.Container(
-                              width: 40,
-                              child: pw.Text('${viagem.despesas[index].nota}',
-                                  style: pw.TextStyle(fontSize: 10)
+                              pw.Container(
+                                width: 40,
+                                child: pw.Text('${viagem.despesas[index].nota}',
+                                    style: pw.TextStyle(fontSize: 10)
+                                ),
                               ),
-                            ),
-                            pw.Container(
-                                width: 140,
-                                child: pw.Text('${viagem.despesas[index].fornecedor}',
-                                    style: pw.TextStyle(fontSize: 10))
-                            ),
-                            pw.Expanded(
-                                child: pw.Container(
-                                    child: pw.Text('${viagem.despesas[index].local}',
-                                        style: pw.TextStyle(fontSize: 10)
-                                    )
-                                )
-                            ),
-                            pw.Container(
-                              width: 70,
-                                child: pw.Column(
-                                    crossAxisAlignment: pw.CrossAxisAlignment.end,
-                                    children: [
-                                      pw.Text(UtilBrasilFields.obterReal(viagem.despesas[index].valor!),
+                              pw.Container(
+                                  width: 140,
+                                  child: pw.Text('${viagem.despesas[index].fornecedor}',
+                                      style: pw.TextStyle(fontSize: 10))
+                              ),
+                              pw.Expanded(
+                                  child: pw.Container(
+                                      child: pw.Text('${viagem.despesas[index].local}',
                                           style: pw.TextStyle(fontSize: 10)
                                       )
-                                    ]
-                                )
-                            )
-                          ]
+                                  )
+                              ),
+                              pw.Container(
+                                  width: 70,
+                                  child: pw.Column(
+                                      crossAxisAlignment: pw.CrossAxisAlignment.end,
+                                      children: [
+                                        pw.Text(UtilBrasilFields.obterReal(viagem.despesas[index].valor!),
+                                            style: pw.TextStyle(fontSize: 10)
+                                        )
+                                      ]
+                                  )
+                              )
+                            ]
+                        )
+                    );
+                }),
+            pw.Row(
+                children:[
+                  pw. Expanded(child: pw.Divider())
+                ]
+            ),
+            pw.Row(
+
+                children: [
+                  pw.Expanded(
+                      child: pw.Text(
+                          "Total Despesas",
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)
                       )
-                  );
-
-              }),
-          pw.Row(
-              children:[
-                pw. Expanded(child: pw.Divider())
-              ]
-          ),
-          pw.Row(
-
-            children: [
-              pw.Expanded(
-                  child: pw.Text(
-                      "Total Despesas",
+                  ),
+                  pw.Text(
+                      UtilBrasilFields.obterReal(_getTotal(viagem)),
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)
                   )
-              ),
-              pw.Text(
-                  UtilBrasilFields.obterReal(_getTotal(viagem)),
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)
-              )
-            ]
-          ),
-          pw.Row(
-              children:[
-                pw. Expanded(child: pw.Divider())
-              ]
-          )
-        ]
+                ]
+            ),
+            pw.Row(
+                children:[
+                  pw. Expanded(child: pw.Divider())
+                ]
+            )
+          ]
+      )
     );
   }
 
@@ -355,10 +357,10 @@ class PdfWidget {
     List<pw.Widget> widgets = [];
     pw.Widget column = pw.Column(
         children: [
-          _mainOfPdf(viagem!),
-          tableOfPdf(viagem),
-          endOfPdf(viagem),
-          _assinatura()
+          //_mainOfPdf(viagem!),
+          tableOfPdf(viagem!),
+          //endOfPdf(viagem),
+          //_assinatura()
         ]
     );
     widgets.add(column);

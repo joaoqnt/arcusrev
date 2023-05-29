@@ -44,6 +44,7 @@ dependencies:
   brasil_fields: ^1.9.1
   permission_handler: ^10.2.0
   cached_network_image: ^3.2.3
+  autocomplete_textfield: ^2.0.1
 
 dev_dependencies:
   flutter_test:

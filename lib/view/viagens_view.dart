@@ -74,8 +74,13 @@ class _ViagensViewState extends State<ViagensView> {
           ),
           Expanded(
               child: ListView.builder(
+                  controller: viagemController.scrollController,
                   itemCount: viagemController.viagens.length,
                   itemBuilder: (context, index) {
+                    if(index == viagemController.viagens.length - 1){
+                      print(viagemController.viagens[index].id);
+                      init(index: index);
+                    }
                     return Card(
                       child: InkWell(
                         onTap: (){
@@ -153,8 +158,8 @@ class _ViagensViewState extends State<ViagensView> {
       ),
     );
   }
-  Future init() async{
-    await viagemController.getAll(widget.cnpj);
+  Future init({int? index}) async{
+    await viagemController.getAll(widget.cnpj,index: index);
     viagemController.getTransportes();
     setState(() {
 

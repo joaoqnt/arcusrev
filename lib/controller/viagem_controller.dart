@@ -12,11 +12,15 @@ class ViagemController{
   Viagem? viagemSelected;
   double valorTotal = 0;
   TextEditingController tecBusca = TextEditingController();
+  ScrollController scrollController = ScrollController();
 
 
-  Future<bool> getAll(String cnpj) async{
-    viagensOriginal = await viagemRepository.getAll(cnpj);
-    viagens = viagensOriginal;
+  Future<bool> getAll(String cnpj, {int? index}) async{
+    viagensOriginal = await viagemRepository.getAll(cnpj, index: index);
+    viagensOriginal.forEach((element) {
+      viagens.add(element);
+    });
+    // viagens = viagensOriginal;
     return true;
   }
 

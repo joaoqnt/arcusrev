@@ -36,6 +36,7 @@ class ViagemDadosController{
     tecFinalidade.text = viagem.finalidade!;
     tecDatachegada.text = DataFormatoUtil.getDate(viagem.dataregresso, 'dd/MM/yyyy');
     tecDatasaida.text = DataFormatoUtil.getDate(viagem.datasaida, 'dd/MM/yyyy');
+    tecObservacao.text = viagem.observacao!;
   }
 
   alteraDados(Viagem viagem){

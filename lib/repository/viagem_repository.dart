@@ -10,13 +10,34 @@ class ViagemRepository{
   List<Transporte> transportes = [];
   List<Usuario> usuarios = [];
 
-  Future<List<Viagem>> getAll(String cnpj) async{
+  Future updateViagem(Viagem viagem, String cnpj) async{
+    var http = Dio();
+    try{
+      String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
+      print(viagem.toJson());
+      Response response = await http.post(
+          'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_viagem',
+        options: Options(headers:{
+          'tenant': 'arcusrev_$cnpj',
+          HttpHeaders.contentTypeHeader: "application/json",
+        }),
+        data: viagemEncoded
+      );
+      if(response.statusCode == 200){
+        print("salvou");
+      }
+    }catch(e){
+      print("erro a atualizar viagem $e");
+    }
+  }
+
+  Future<List<Viagem>> getAll(String cnpj, {int? index}) async{
     List<Viagem> viagens = [];
     var http = Dio();
     try{
       transportes.clear();
       Response response = await http.get(
-          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall',
+          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall?FIRST=50&SKIP=${index ?? 0}',
           options: Options(headers: {'tenant': 'arcusrev_$cnpj'}));
       if(response.statusCode == 200){
         var results = response.data['resultSelects'];
@@ -38,10 +59,6 @@ class ViagemRepository{
             Despesa despesa = Despesa.fromJson(elemento);
             viagem.despesas.add(despesa);
           });
-          results['responsavel'].where((campo)=> campo['ID'] == element['RESPONSAVEL']).forEach((responsavel){
-            Usuario usuario = Usuario.fromJson(responsavel);
-            viagem.responsavel = usuario;
-          });
           viagens.add(viagem);
         });
       }
@@ -49,27 +66,6 @@ class ViagemRepository{
 
     }
     return viagens;
-  }
-
-  Future updateViagem(Viagem viagem, String cnpj) async{
-    var http = Dio();
-    try{
-      String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
-      print(viagem.toJson());
-      Response response = await http.post(
-          'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_viagem',
-        options: Options(headers:{
-          'tenant': 'arcusrev_$cnpj',
-          HttpHeaders.contentTypeHeader: "application/json",
-        }),
-        data: viagemEncoded
-      );
-      if(response.statusCode == 200){
-        print("salvou");
-      }
-    }catch(e){
-      print("erro a atualizar viagem $e");
-    }
   }
 
   Future<bool> insertViagem(Viagem viagem,String cnpj) async {

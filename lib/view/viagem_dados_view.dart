@@ -5,7 +5,7 @@ import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
-
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import '../model/transporte.dart';
 import '../utils/dataformato_util.dart';
 import '../widgets/circularprogress_widget.dart';
@@ -134,6 +134,10 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                     }
                   },
                 )
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0, left: 8),
+                child: textFormFieldWidget.criaTff(viagemCadastroController.tecObservacao, "Observação",isNeeded: false),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

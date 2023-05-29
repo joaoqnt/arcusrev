@@ -4,7 +4,7 @@ class Despesa {
   int? id;
   String? nome;
   DateTime? data;
-  int? nota;
+  String? nota;
   String? fornecedor;
   String? local;
   double? valor;

@@ -137,7 +137,7 @@
 			<getall>
 				<viagem>
 					<data>
-						select
+						select FIRST :FIRST SKIP :SKIP
 							r.viacodigo as ID,
 							r.empcodigo as empresa,
 							r.tracodigo as transporte,
@@ -155,6 +155,12 @@
 				</viagem>
 				<despesa>
 					<data>
+						with viagem as (
+							select FIRST :FIRST SKIP :SKIP
+								r.viacodigo as ID
+							from rviviagem r
+							order by r.viacodigo desc
+						)
 						select
 							d.viacodigo as viagem,
 							d.descodigo as id,
@@ -165,7 +171,8 @@
 							d.deslocal as local,
 							d.desvalor as valor
 						from rvidespesa d
-						order by desdata asc, d.descodigo asc
+							inner join viagem v on (v.id = d.viacodigo)
+						order by d.descodigo asc,desdata asc
 					</data>
 				</despesa>
 				<transporte>
@@ -183,16 +190,6 @@
 						order by gp.parnome
 					</data>
 				</funcionarios>
-				<responsavel>
-					<data>
-						select
-							pf.parcodigo as id,
-							gp.parnome as nome,
-							pf.funadministra as administrador
-						from genparcei gp
-							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
-					</data>
-				</responsavel>
 			</getall>
 		</query>
 	</files>		
