@@ -1,10 +1,11 @@
 import 'package:arcusrev/model/viagem.dart';
 import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../model/despesa.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../utils/dataformato_util.dart';
 
 class PdfWidget {
@@ -208,10 +209,9 @@ class PdfWidget {
 
               ],
             ),
-            pw.ListView.builder(
-                itemCount: viagem.despesas.length,
-                itemBuilder: (context, index) {
-                  return
+            for(int index = 0; index < viagem.despesas.length; index++)
+              pw.Row(
+                  children: [
                     pw.Padding(
                         padding: pw.EdgeInsets.only(bottom: 8,top: index == 0 ? 8 : 0),
                         child: pw.Row(
@@ -239,12 +239,10 @@ class PdfWidget {
                                   child: pw.Text('${viagem.despesas[index].fornecedor}',
                                       style: pw.TextStyle(fontSize: 10))
                               ),
-                              pw.Expanded(
-                                  child: pw.Container(
-                                      child: pw.Text('${viagem.despesas[index].local}',
-                                          style: pw.TextStyle(fontSize: 10)
-                                      )
-                                  )
+                              pw.Container(
+                                  width: 100,
+                                  child: pw.Expanded(child: pw.Text('${viagem.despesas[index].local}',
+                                      style: pw.TextStyle(fontSize: 10)))
                               ),
                               pw.Container(
                                   width: 70,
@@ -259,8 +257,10 @@ class PdfWidget {
                               )
                             ]
                         )
-                    );
-                }),
+                    )
+                  ]
+              )
+            ,
             pw.Row(
                 children:[
                   pw. Expanded(child: pw.Divider())
@@ -271,7 +271,7 @@ class PdfWidget {
                 children: [
                   pw.Expanded(
                       child: pw.Text(
-                          "Total Despesas",
+                          "Total Despesas:",
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 10)
                       )
                   ),
@@ -349,39 +349,25 @@ class PdfWidget {
     );
   }
 
-  Future<void> gerarRelatorio({Viagem? viagem}) async {
+  Future<void> gerarRelatorio({Viagem? viagem, String? cnpj}) async {
     final pdf = pw.Document();
-    final _image = pw.MemoryImage(
-      (await rootBundle.load('images/logo-cocal.png')).buffer.asUint8List(),
-    );
-    List<pw.Widget> widgets = [];
-    pw.Widget column = pw.Column(
-        children: [
-          //_mainOfPdf(viagem!),
-          tableOfPdf(viagem!),
-          //endOfPdf(viagem),
-          //_assinatura()
-        ]
-    );
-    widgets.add(column);
-
+    final netImage = await networkImage('http://mundolivre.dyndns.info:8080/catalogos/$cnpj/0_0.png');
     pdf.addPage(
       pw.MultiPage(
         maxPages: 100,
           pageFormat: PdfPageFormat.a4,
           header: (pw.Context context) {
-            return _headerOfPdf(viagem,_image); // Cabeçalho fixo
+            return _headerOfPdf(viagem!,netImage); // Cabeçalho fixo
           },
-          build: (pw.Context context)
-          {
-            return widgets;
-          }
+          build: (pw.Context context) => <pw.Widget>[
+            _mainOfPdf(viagem!),
+            tableOfPdf(viagem),
+            endOfPdf(viagem),
+            _assinatura()
+          ]
       )
     );
-
-    await Printing.sharePdf(bytes: await pdf.save(), filename: '${viagem.id}.pdf');
-
-    print('PDF gerado com sucesso!');
+    await Printing.sharePdf(bytes: await pdf.save(), filename: '${viagem!.id}.pdf');
   }
 
   _getTotal(Viagem viagem){
@@ -403,7 +389,7 @@ class PdfWidget {
                     child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         mainAxisAlignment: pw.MainAxisAlignment.start,
-                        children: [pw.Text("$element :",style: pw.TextStyle(fontSize: 10))]
+                        children: [pw.Text("$element:",style: pw.TextStyle(fontSize: 10))]
                     )
                 ),
                 pw.Column(
@@ -420,11 +406,26 @@ class PdfWidget {
     return list;
   }
 
+  pw.Widget generateRows(int index, Viagem viagem){
+    return pw.Padding(
+      padding: pw.EdgeInsets.only(bottom: 8,top: index == 0 ? 8 : 0),
+      child: pw.Row(
+        children: [
+          pw.Container(
+            width: 70,
+            child: pw.Text('${viagem.despesas[index].nome}',
+                style: pw.TextStyle(fontSize: 10)
+            ),
+          ),
+        ]
+      )
+    );
+  }
+
   _getValueByDespesa(Viagem viagem, String element){
     double soma = 0;
     viagem.despesas.where((despesa) => despesa.nome == element).forEach((elemento) {
       soma += elemento.valor!;
-      print(soma);
     });
     return soma;
   }

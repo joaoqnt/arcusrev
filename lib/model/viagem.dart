@@ -14,7 +14,7 @@ class Viagem {
   String? acompanhantes;
   DateTime? datasaida;
   DateTime? dataregresso;
-  Usuario? responsavel;
+  int? responsavel;
   String? observacao;
 
   Viagem(
@@ -27,7 +27,7 @@ class Viagem {
         this.acompanhantes,
         this.datasaida,
         this.dataregresso,
-       // this.responsavel,
+       this.responsavel,
         this.observacao});
 
   Viagem.fromJson(Map<String, dynamic> json) {
@@ -40,23 +40,23 @@ class Viagem {
     acompanhantes = json['ACOMPANHANTES'];
     datasaida = DateTime.parse(json['DATASAIDA']);
     dataregresso = DateTime.parse(json['DATAREGRESSO']);
-    //responsavel = json['responsavel'];
+    //responsavel!.id = json['RESPONSAVEL'];
     observacao = json['OBSERVACAO'];
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({String? cnpj}) {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['ID'] = this.id;
     data['EMPRESA'] = this.empresa;
     data['MOTORISTA'] = this.motorista;
     data['TRANSPORTE'] = this.transporte!.id;
-    // data['DESPESAS'] = this.despesas[0].toJson();
+    data['CNPJ'] = cnpj;
     data['DESTINO'] = this.destino;
     data['FINALIDADE'] = this.finalidade;
     data['ACOMPANHANTES'] = this.acompanhantes;
     data['DATASAIDA'] =  DataFormatoUtil.getDate(this.datasaida,DataFormatoUtil.formatInsertFirebird);
     data['DATAREGRESSO'] = DataFormatoUtil.getDate(this.dataregresso,DataFormatoUtil.formatInsertFirebird);
-    data['RESPONSAVEL'] = this.responsavel!.id;
+    data['RESPONSAVEL'] = this.responsavel;
     data['OBSERVACAO'] = this.observacao;
     return data;
   }

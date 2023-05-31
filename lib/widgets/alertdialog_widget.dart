@@ -41,7 +41,7 @@ class AlertDialogWidget{
                           Expanded(
                             child: DropdownButton(
                               isExpanded: true,
-                              hint: Text("Transporte"),
+                              hint: Text("Despesa"),
                               value: valor,
                               items: list.map((e) {
                                 return DropdownMenuItem(

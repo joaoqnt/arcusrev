@@ -45,6 +45,8 @@ dependencies:
   permission_handler: ^10.2.0
   cached_network_image: ^3.2.3
   autocomplete_textfield: ^2.0.1
+  flutter_speed_dial: ^7.0.0
+  back_button_interceptor: ^6.0.2
 
 dev_dependencies:
   flutter_test:

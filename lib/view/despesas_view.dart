@@ -11,6 +11,7 @@ import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class DespesasView extends StatefulWidget {
   Viagem viagemSelected;
@@ -37,6 +38,10 @@ class _DespesasViewState extends State<DespesasView> {
   PdfWidget pdfWidget = PdfWidget();
 
   @override
+  void initState() {
+    despesasController.orderBy(widget.viagemSelected,type: 'id',desc: false);
+    super.initState();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +56,6 @@ class _DespesasViewState extends State<DespesasView> {
                       "Despesas",
                       despesasController.despesas,
                       despesasController.formKey,
-                      //selected: despesasController.despesaSelected,
                       tec1:despesasController.tecCodigo,
                       labelText1: "Código",
                       t1: 1,
@@ -99,9 +103,7 @@ class _DespesasViewState extends State<DespesasView> {
                           return null;
                         },
                       ),
-                      //botao1: elevatedButtonWidget.botaoExcluir(),
                       botao2: ElevatedButton.icon(
-
                           onPressed: () async{
                             if (alertDialogWidget.formKey.currentState!.validate()){
                               circularProgressWidget.showCircularProgress(context);
@@ -109,13 +111,11 @@ class _DespesasViewState extends State<DespesasView> {
                                   widget.viagemSelected,
                                   widget.cnpj,
                                   valor: alertDialogWidget.valor);
-                              // setState(() {});
                               await widget.viagemController.getAll(widget.cnpj);
                               circularProgressWidget.hideCircularProgress(context);
                               Navigator.of(context).pop();
                               setState(() {});
                             }
-                            // Navigator.of(context).pop();
                           },
                           icon: Icon(Icons.save_outlined),
                           label: Text('Salvar'),
@@ -129,7 +129,8 @@ class _DespesasViewState extends State<DespesasView> {
             ),
             IconButton(
                 onPressed: () async {
-                  pdfWidget.gerarRelatorio(viagem: widget.viagemSelected);
+                  despesasController.orderBy(widget.viagemSelected,type: 'date',desc: false);
+                  pdfWidget.gerarRelatorio(viagem: widget.viagemSelected,cnpj: widget.cnpj);
                 },
                 icon: Icon(Icons.picture_as_pdf))
           ]
@@ -159,8 +160,13 @@ class _DespesasViewState extends State<DespesasView> {
                                       ),
                                       Row(
                                         children: [
-                                          Text("${widget.viagemSelected.despesas[index].fornecedor} - "),
-                                          Text("${widget.viagemSelected.despesas[index].local}")
+                                          Text("${widget.viagemSelected.despesas[index].fornecedor} - ",style: TextStyle(color: Colors.grey)),
+                                          Text("${widget.viagemSelected.despesas[index].local}",style: TextStyle(color: Colors.grey))
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("${DataFormatoUtil.getDate(widget.viagemSelected.despesas[index].data, 'dd/MM/yyyy')}",style: TextStyle(color: Colors.grey))
                                         ],
                                       )
                                     ],
@@ -254,7 +260,59 @@ class _DespesasViewState extends State<DespesasView> {
           ),
         ],
       ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: SpeedDial(
+          icon: Icons.sort,
+          activeIcon: Icons.close,
+          spacing: 3,
+          // openCloseDial: isDialOpen,
+          childPadding: const EdgeInsets.all(5),
+          spaceBetweenChildren: 4,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.calendar_today),
+              label: "Ordenar por Id crescente",
+              onTap: (){
+                despesasController.orderBy(widget.viagemSelected,type: 'id',desc: false);
+                setState(() {
+                });
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.calendar_today),
+              label: "Ordenar por Id decrescente",
+              onTap: (){
+                despesasController.orderBy(widget.viagemSelected,type: 'id',desc: true);
+                setState(() {
+                  print("Data");
+                });
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.calendar_today),
+              label: "Ordenar por data crescente",
+              //label: 'First',
+              onTap: (){
+                despesasController.orderBy(widget.viagemSelected,type: 'date',desc: false);
+                setState(() {
+                  print("Data");
+                });
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.calendar_today),
+              label: "Ordenar por data decrescente",
+              onTap: (){
+                despesasController.orderBy(widget.viagemSelected,type: 'date',desc: true);
+                setState(() {
+                  print("Data");
+                });
+              },
+            )
+          ],
+        ),
+
     );
   }
-  
+
 }

@@ -19,9 +19,6 @@ class DespesaRepository{
           }),
           data: despesaEncoded
       );
-      if(response.statusCode == 200){
-        print("salvou");
-      }
     }catch(e){
       print("erro ao salvar despesa $e");
     }
@@ -40,9 +37,6 @@ class DespesaRepository{
           }),
           data: despesaEncoded
       );
-      if(response.statusCode == 200){
-        print("salvou despesa");
-      }
     }catch(e){
       print("erro ao atualizar despesa $e");
     }
@@ -61,9 +55,6 @@ class DespesaRepository{
           }),
           data: despesaEncoded
       );
-      if(response.statusCode == 200){
-        print("salvou");
-      }
     }catch(e){
       print("erro ao deletar despesa $e");
     }

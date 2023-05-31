@@ -2,7 +2,9 @@ import 'package:arcusrev/controller/login_controller.dart';
 import 'package:arcusrev/view/viagens_view.dart';
 import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -17,6 +19,11 @@ class _LoginViewState extends State<LoginView> {
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
 
   @override
+  void initState() {
+    init();
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -99,5 +106,10 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
     );
+  }
+  Future init({int? index}) async{
+    setState(() {
+
+    });
   }
 }

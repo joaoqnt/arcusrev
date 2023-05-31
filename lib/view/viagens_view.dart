@@ -8,7 +8,6 @@ import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
-
 import '../widgets/circularprogress_widget.dart';
 
 class ViagensView extends StatefulWidget {
@@ -26,6 +25,8 @@ class _ViagensViewState extends State<ViagensView> {
   ElevatedButtonWidget elevatedButtonWidget = ElevatedButtonWidget();
   CircularProgressWidget circularProgressWidget = CircularProgressWidget();
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
+  DataFormatoUtil dataFormatoUtil = DataFormatoUtil();
+  
   void initState() {
     init();
     super.initState();
@@ -39,8 +40,12 @@ class _ViagensViewState extends State<ViagensView> {
           actions: [
             IconButton(
                 onPressed: () {
+                  print(viagemController.transportes.length);
+                  print(widget.usuarioLogado.id);
+                  print(viagemController.getMaxId());
+                  print(widget.cnpj);
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (BuildContext) =>
+                      context, MaterialPageRoute(builder: (context) =>
                       ViagemDadosView(
                         transportes: viagemController.transportes,
                         tipo: 'I',
@@ -48,7 +53,7 @@ class _ViagensViewState extends State<ViagensView> {
                         viagemController: viagemController,
                         maxId: viagemController.getMaxId(),
                         cnpj: widget.cnpj,)
-                  )).then((value) => setState((){}));
+                  )).then((value) => init());
                 },
                 icon: Icon(Icons.add))
           ]
@@ -57,35 +62,75 @@ class _ViagensViewState extends State<ViagensView> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: viagemController.tecBusca,
-              decoration: const InputDecoration(
-                labelText: 'Pesquisa',
-                icon: Icon(Icons.search),
-                fillColor: Colors.grey,
-                hintText: 'Pesquise pela viagem/motorista'
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0),
+                      child: SizedBox(
+                        width: 75,
+                        height: 60,
+                        child: DropdownButton(
+                            hint:Text('Filtros'),
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                            alignment: Alignment.center,
+                            value:viagemController.filtroSelected,
+                            items: viagemController.tiposFiltro.map((e) {
+                              return DropdownMenuItem(
+                                  value: e,
+                                  child: Text('${e}')
+                              );
+                            }).toList(),
+                            onChanged: (value){
+                              viagemController.onChange(value!);
+                              setState(() {
+                              });
+                            },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: viagemController.tecBusca,
+                          decoration:  InputDecoration(
+                            labelText: "Pesquisa",
+                            fillColor: Colors.grey,
+                            hintText: viagemController.filtroSelected == "Data" ?
+                            "Pesquise pela data saida/chegada" : "Funcionario/viagem/destino/datas"
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              viagemController.filterOs(busca: value);
+                            });
+                          },
+                          onTap: () async{
+                            viagemController.filtroSelected == 'Data' ? await viagemController.setDate(context) : null;
+                            viagemController.filtroSelected == 'Data' ? setState((){}) : null;
+                            print(viagemController.selectedDate);
+                          }
+                        )
+                      ),
+                    ),
+                  ]
               ),
-              onChanged: (value) {
-                setState(() {
-                  viagemController.filterOs(value);
-                });
-              },
-            )
+            ),
           ),
           Expanded(
               child: ListView.builder(
                   controller: viagemController.scrollController,
-                  itemCount: viagemController.viagens.length,
+                  itemCount: viagemController.viagensFiltered.length,
                   itemBuilder: (context, index) {
-                    if(index == viagemController.viagens.length - 1){
-                      print(viagemController.viagens[index].id);
-                      init(index: index);
-                    }
+                    viagemController.checkIndex(index) == -1 ? init(index: (index + 1)) : null;
                     return Card(
                       child: InkWell(
                         onTap: (){
-                          print(widget.cnpj);
-                          viagemController.viagemSelected = viagemController.viagens[index];
+                          viagemController.viagemSelected = viagemController.viagensFiltered[index];
                           Navigator.push(
                               context, MaterialPageRoute(builder: (BuildContext) => DespesasView(
                               widget.usuarioLogado,
@@ -105,19 +150,19 @@ class _ViagensViewState extends State<ViagensView> {
                                         children: [
                                           Row(
                                             children: [
-                                              Text("${viagemController.viagens[index].id} - "),
-                                              Text('${viagemController.viagens[index].destino}'),
+                                              Text("${viagemController.viagensFiltered[index].id} - "),
+                                              Text('${viagemController.viagensFiltered[index].destino}'),
                                             ],
                                           ),
                                           Text(
-                                            '${viagemController.viagens[index].motorista}',
+                                            '${viagemController.viagensFiltered[index].motorista}',
                                             style: TextStyle(color: Colors.grey),
                                           ),
                                           Text(
-                                            "Saida : ${DataFormatoUtil.getDate(viagemController.viagens[index].datasaida, 'dd/MM/yyyy')}",
+                                            "Saida : ${DataFormatoUtil.getDate(viagemController.viagensFiltered[index].datasaida, 'dd/MM/yyyy')}",
                                             style: TextStyle(color: Colors.grey)),
                                           Text(
-                                              "Chegada : ${DataFormatoUtil.getDate(viagemController.viagens[index].dataregresso, 'dd/MM/yyyy')}",
+                                              "Chegada : ${DataFormatoUtil.getDate(viagemController.viagensFiltered[index].dataregresso, 'dd/MM/yyyy')}",
                                               style: TextStyle(color: Colors.grey)),
                                     ],
                                   )),
@@ -127,13 +172,12 @@ class _ViagensViewState extends State<ViagensView> {
                                     Padding(
                                       padding: const EdgeInsets.only(right: 8.0),
                                       child: Text(
-                                          "${UtilBrasilFields.obterReal(viagemController.getTotal(viagemController.viagens[index]))}",
+                                          "${UtilBrasilFields.obterReal(viagemController.getTotal(viagemController.viagensFiltered[index]))}",
                                           style:TextStyle(fontSize: 10) ),
                                     ),
                                     IconButton(
                                         onPressed: (){
-                                          viagemController.viagemSelected = viagemController.viagens[index];
-                                          print(viagemController.viagens[index].transporte!.nome);
+                                          viagemController.viagemSelected = viagemController.viagensFiltered[index];
                                           Navigator.push(
                                               context, MaterialPageRoute(builder: (BuildContext) => ViagemDadosView(
                                               cnpj: widget.cnpj,
@@ -141,7 +185,7 @@ class _ViagensViewState extends State<ViagensView> {
                                               viagemSelected: viagemController.viagemSelected,
                                               transportes: viagemController.transportes,
                                               viagemController: viagemController)
-                                          )).then((value) => setState((){}));
+                                          )).then((value) => init());
                                         },
                                         icon: Icon(Icons.edit_outlined))
                                   ],
@@ -160,10 +204,8 @@ class _ViagensViewState extends State<ViagensView> {
   }
   Future init({int? index}) async{
     await viagemController.getAll(widget.cnpj,index: index);
-    viagemController.getTransportes();
-    setState(() {
-
-    });
+    index == null ? viagemController.getTransportes() : null;
+    setState(() {});
   }
 }
 

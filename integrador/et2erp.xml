@@ -6,13 +6,12 @@
 				<login>
 					<data>
 						select
-							pf.parcodigo as id,
-							gp.parnome as nome,
-							pf.funadministra as administrador
-						from genparcei gp
-							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funadministra = 'S')
-						where cast(pf.funusuario as varchar(15))  = :FUNUSUARIO
-							and cast(pf.funsenhaapp as varchar(10)) = :FUNSENHAAPP
+							gu.usucodigo as id,
+							gu.usulogin as nome,
+							'S' as administrador
+						from genusuari gu
+						where gu.usulogin = :FUNUSUARIO
+							and gu.ususenha = :FUNSENHAAPP
 					</data>
 				</login>
 			</usuario>
@@ -28,7 +27,8 @@
 								VIAFINALIDADE = :FINALIDADE,
 								TRACODIGO = :TRANSPORTE,
 								VIADATSAIDA = :DATASAIDA,
-								VIADATREGRESSO = :DATAREGRESSO
+								VIADATREGRESSO = :DATAREGRESSO,
+								VIAACOMPANHANTES = :ACOMPANHANTES
 							where viacodigo = :ID
 						</data>				
 					</update>
@@ -52,7 +52,7 @@
                                 VIAOBSERVACAO) 
                             VALUES (
                                 (select coalesce(max(viacodigo),0) + 1 from rviviagem), 
-                                :EMPRESA, 
+                                (select g.empcodigo from genempres g where g.empcgc = :CNPJ ), 
                                 :MOTORISTA, 
                                 :TRANSPORTE, 
                                 :DESTINO, 
@@ -137,7 +137,7 @@
 			<getall>
 				<viagem>
 					<data>
-						select FIRST :FIRST SKIP :SKIP
+						select FIRST :FIRST SKIP (cast(:SKIP as int))
 							r.viacodigo as ID,
 							r.empcodigo as empresa,
 							r.tracodigo as transporte,
@@ -184,7 +184,8 @@
 					<data>
 						select
 							pf.parcodigo as id,
-							gp.parnome as nome
+							gp.parnome as nome,
+							'N' as administrador
 						from genparcei gp
 							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funmotorista = 'S')
 						order by gp.parnome

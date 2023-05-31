@@ -52,12 +52,26 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
           key: viagemCadastroController.formKey,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: textFormFieldWidget.criaTff(viagemCadastroController.tecId, "Código da Viagem",ativo: false,tamanho:1),
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: textFormFieldWidget.criaTff(viagemCadastroController.tecId, "Código da Viagem",ativo: false,isNeeded: false),
+                    ),
+                  ),
+
+                  Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right:8.0),
+                        child: textFormFieldWidget.criaTff(viagemCadastroController.tecAcompanhantes, "Acompanhantes", isNeeded: false),
+                      )
+                  )
+                ],
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
                 child: textFormFieldWidget.criaTff(viagemCadastroController.tecMotorista, "Funcionário",tamanho: 52),
               ),
               Padding(
@@ -73,7 +87,7 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                           isExpanded:true,
                           hint: Text("Transporte"),
                           value: viagemCadastroController.transporteSelected,
-                          items: viagemCadastroController.transportes.map((e) {
+                          items: widget.viagemController!.transportes.map((e) {
                             return DropdownMenuItem(
                                 value: e,
                                 child: Text('${e.nome}'));
@@ -136,7 +150,7 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                 )
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8.0, left: 8),
+                padding: const EdgeInsets.only(bottom: 8, right: 8.0, left: 8),
                 child: textFormFieldWidget.criaTff(viagemCadastroController.tecObservacao, "Observação",isNeeded: false),
               ),
               Row(
@@ -145,10 +159,7 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                   widget.tipo == 'I' ? Container() :
                   ElevatedButton.icon(
                       onPressed: () async{
-                        circularProgressWidget.showCircularProgress(context);
-                        await viagemCadastroController.deleteViagem(widget.viagemSelected!,widget.viagemController!,widget.cnpj!);
-                        await widget.viagemController!.getAll(widget.cnpj!);
-                        circularProgressWidget.hideCircularProgress(context);
+                        await viagemCadastroController.delete(widget.viagemSelected!, widget.cnpj!, context, widget.usuarioLogado!);
                         Navigator.of(context).pop();
                       },
                       icon: Icon(Icons.delete_outline),
@@ -160,17 +171,11 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                   ElevatedButton.icon(
                       onPressed: () async{
                         if(widget.tipo == 'I' && viagemCadastroController.formKey.currentState!.validate()){
-                          await viagemCadastroController.insertViagem(widget.usuarioLogado!,widget.viagemController!,widget.cnpj!);
-                          await widget.viagemController!.getAll(widget.cnpj!);
-                          circularProgressWidget.hideCircularProgress(context);
+                          await viagemCadastroController.insert( widget.cnpj!, context, widget.viagemController!, widget.usuarioLogado!);
                           Navigator.of(context).pop();
                         }
                         if(widget.tipo != 'I'){
-                          circularProgressWidget.showCircularProgress(context);
-                          print(widget.cnpj);
-                          await viagemCadastroController.updateViagem(widget.viagemSelected!,widget.viagemController!,widget.cnpj!);
-                          await widget.viagemController!.getAll(widget.cnpj!);
-                          circularProgressWidget.hideCircularProgress(context);
+                          await viagemCadastroController.update(widget.viagemSelected!, widget.cnpj!, context, widget.viagemController!);
                           Navigator.of(context).pop();
                         }
                       },
@@ -189,9 +194,8 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
     );
   }
   init(){
-    viagemCadastroController.getTransportes(widget.viagemController!);
-    widget.viagemSelected == null ? null :
-    viagemCadastroController.preencheCampos(widget.viagemSelected!);
-    widget.viagemSelected != null ? null : viagemCadastroController.tecId.text = widget.maxId.toString();
+    viagemCadastroController.init(viagemSelected: widget.viagemSelected,maxId: widget.maxId);
+    setState(() {
+    });
   }
 }

@@ -16,6 +16,7 @@ class DespesasController{
   List<String> despesas = ['Combustivel','Hospedagem','Outras','Refeições','Sem comprovante'];
   String? despesaSelected;
   DateTime? selectedDate;
+  bool isOrdered = false;
   final formKey = GlobalKey<FormState>();
 
   alteraDados(Despesa despesa,{String? valor}){
@@ -108,4 +109,25 @@ class DespesasController{
     });
     return maxid + 1;
   }
+
+  void orderBy(Viagem viagem,{String? type, bool? desc}){
+    if(!isOrdered){
+      if(type == 'id'){
+        if(desc == false){
+          viagem.despesas.sort((Despesa b, Despesa a)=> b.id!.compareTo(a.id!));
+        }else{
+          viagem.despesas.sort((Despesa b, Despesa a)=> a.id!.compareTo(b.id!));
+        }
+      }else{
+        if(desc == false){
+          viagem.despesas.sort((Despesa b, Despesa a)=> b.data!.compareTo(a.data!));
+        }else{
+          viagem.despesas.sort((Despesa b, Despesa a)=> a.data!.compareTo(b.data!));
+        }
+      }
+    }
+    else{
+    }
+  }
+
 }

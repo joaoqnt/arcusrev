@@ -23,9 +23,6 @@ class ViagemRepository{
         }),
         data: viagemEncoded
       );
-      if(response.statusCode == 200){
-        print("salvou");
-      }
     }catch(e){
       print("erro a atualizar viagem $e");
     }
@@ -35,19 +32,22 @@ class ViagemRepository{
     List<Viagem> viagens = [];
     var http = Dio();
     try{
-      transportes.clear();
+      if(index == null || index < 49){
+        transportes.clear();
+      }
       Response response = await http.get(
-          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall?FIRST=50&SKIP=${index ?? 0}',
+          'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/getall?FIRST=100&SKIP=${index == null ? 0 : index + 1}',
           options: Options(headers: {'tenant': 'arcusrev_$cnpj'}));
       if(response.statusCode == 200){
         var results = response.data['resultSelects'];
-        results['transporte'].forEach((element) async{
-          Transporte transporte = Transporte.fromJson(element);
-          transportes.add(transporte);
-        });
+        if(index == null || index < 49){
+          results['transporte'].forEach((element) async{
+            Transporte transporte = Transporte.fromJson(element);
+            transportes.add(transporte);
+          });
+        }
         results['funcionarios'].forEach((funcionarios){
           Usuario usuario = Usuario.fromJson(funcionarios);
-          print(usuario.toJson());
           usuarios.add(usuario);
         });
         results['viagem'].forEach((element) async{
@@ -71,8 +71,7 @@ class ViagemRepository{
   Future<bool> insertViagem(Viagem viagem,String cnpj) async {
     var http = Dio();
     try{
-      String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
-      print(viagem.toJson());
+      String viagemEncoded = jsonEncode({"1" : [viagem.toJson(cnpj: cnpj)]});
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/cadastra_viagem',
           options: Options(headers:{
@@ -81,9 +80,6 @@ class ViagemRepository{
           }),
           data: viagemEncoded
       );
-      if(response.statusCode == 200){
-        print("salvou");
-      }
     }catch(e){
       print("erro ao salvar viagem $e");
     }
