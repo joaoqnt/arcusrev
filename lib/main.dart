@@ -1,5 +1,6 @@
 import 'package:arcusrev/view/login_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main(){
   runApp(MyApp());
@@ -18,6 +19,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginView(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('pt', 'BR')],
+      theme: ThemeData(
+          primarySwatch: Colors.deepOrange
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

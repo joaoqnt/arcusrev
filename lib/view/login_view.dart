@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:arcusrev/controller/login_controller.dart';
 import 'package:arcusrev/view/viagens_view.dart';
 import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
 
 class LoginView extends StatefulWidget {
@@ -34,8 +37,9 @@ class _LoginViewState extends State<LoginView> {
             children: [
               Container(
                 padding: EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width/1.2,
-                height: MediaQuery.of(context).size.height/1.6,
+                width:  MediaQuery.of(context).size.width < 650 ?
+                MediaQuery.of(context).size.width* 0.8 : MediaQuery.of(context).size.width* 0.4 ,
+                height: MediaQuery.of(context).size.height * 0.8,
                 decoration: BoxDecoration(
                   color: Colors.white,
                     boxShadow:[
@@ -52,6 +56,11 @@ class _LoginViewState extends State<LoginView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Expanded(
+                          child: Container(
+                            child: Center(child: Image.asset("images/logo_pequeno.png"))
+                          )
+                      ),
                       textFormFieldWidget.criaTff(loginController.tecUsuario, "Usuário",tamanho: 15),
                       Padding(
                         padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
@@ -80,7 +89,7 @@ class _LoginViewState extends State<LoginView> {
                                 child: Container(
                                   alignment: Alignment.center,
                                   constraints: BoxConstraints(minHeight: 50),
-                                  decoration: BoxDecoration(color: Colors.blueAccent),
+                                  decoration: BoxDecoration(color: Colors.deepOrange),
                                   child: Text("Entrar",style: TextStyle(color: Colors.white,fontSize: 18))),
                                 onTap: () async{
                                   if (loginController.formKey.currentState!.validate() ) {

@@ -130,7 +130,8 @@ class _DespesasViewState extends State<DespesasView> {
             IconButton(
                 onPressed: () async {
                   despesasController.orderBy(widget.viagemSelected,type: 'date',desc: false);
-                  pdfWidget.gerarRelatorio(viagem: widget.viagemSelected,cnpj: widget.cnpj);
+                  await despesasController.getEmpresa(widget.cnpj);
+                  pdfWidget.gerarRelatorio(despesasController.empresa!,viagem: widget.viagemSelected);
                 },
                 icon: Icon(Icons.picture_as_pdf))
           ]

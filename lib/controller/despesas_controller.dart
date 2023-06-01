@@ -1,8 +1,9 @@
+import 'package:arcusrev/model/empresa.dart';
 import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/repository/despesa_repository.dart';
+import 'package:arcusrev/repository/empresa_repository.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
 import 'package:flutter/material.dart';
-
 import '../model/despesa.dart';
 
 class DespesasController{
@@ -14,6 +15,8 @@ class DespesasController{
   TextEditingController tecData = TextEditingController();
   TextEditingController tecDocumento = TextEditingController();
   List<String> despesas = ['Combustivel','Hospedagem','Outras','Refeições','Sem comprovante'];
+  EmpresaRepositoy empresaRepositoy = EmpresaRepositoy();
+  Empresa? empresa;
   String? despesaSelected;
   DateTime? selectedDate;
   bool isOrdered = false;
@@ -45,7 +48,6 @@ class DespesasController{
 
   updateDespesas(Despesa despesa, int viagem,String cnpj,{String? valor}){
     alteraDados(despesa,valor: valor);
-    print(despesa.toJson(viagem: viagem));
     try{
       despesaRepository.updateDespesa(despesa, viagem,cnpj);
     }catch(e){
@@ -66,7 +68,6 @@ class DespesasController{
   onTap(Despesa despesa,{String? valor}){
     despesaSelected = despesa.nome;
     valor = despesaSelected;
-    print(valor);
     tecCodigo.text = despesa.id.toString();
     tecDocumento.text = despesa.nota.toString();
     tecFornecedor.text = despesa.fornecedor!;
@@ -108,6 +109,10 @@ class DespesasController{
       }
     });
     return maxid + 1;
+  }
+
+  Future getEmpresa(String cnpj) async{
+    empresa = await empresaRepositoy.getAll(cnpj);
   }
 
   void orderBy(Viagem viagem,{String? type, bool? desc}){

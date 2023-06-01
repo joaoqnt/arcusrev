@@ -17,6 +17,19 @@
 			</usuario>
 		</login>
 		<query>
+			<getempresa>
+				<empresa>
+					<data>
+						select
+							g.empcodigo as id,
+							g.emprazaosocial as nome,
+							g.empurl as img,
+							g.empcgc as cnpj
+						from genempres g
+						where g.empcgc = :CNPJ
+					</data>
+				</empresa>
+			</getempresa>
 			<atualiza_viagem>
 				<viagem>
 					<update>

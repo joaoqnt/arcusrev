@@ -17,6 +17,18 @@
 			</usuario>
 		</login>
 		<query>
+			<getempresa>
+				<empresa>
+					<data>
+						select
+							g.empcodigo as id,
+							g.emprazaosocial as nome,
+							g.empurl as img
+						from genempres g
+						where g.empcgc = :CNPJ
+					</data>
+				</empresa>
+			</getempresa>
 			<atualiza_viagem>
 				<viagem>
 					<update>
@@ -27,7 +39,8 @@
 								VIAFINALIDADE = :FINALIDADE,
 								TRACODIGO = :TRANSPORTE,
 								VIADATSAIDA = :DATASAIDA,
-								VIADATREGRESSO = :DATAREGRESSO
+								VIADATREGRESSO = :DATAREGRESSO,
+								VIAACOMPANHANTES = :ACOMPANHANTES
 							where viacodigo = :ID
 						</data>				
 					</update>

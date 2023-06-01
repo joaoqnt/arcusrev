@@ -3,9 +3,9 @@ import 'package:arcusrev/repository/usuario_repository.dart';
 import 'package:flutter/material.dart';
 
 class LoginController{
-  TextEditingController tecUsuario = TextEditingController(text: 'admin');
-  TextEditingController tecSenha = TextEditingController(text: '180969');
-  TextEditingController tecEmpresa = TextEditingController(text: '25650383000174');
+  TextEditingController tecUsuario = TextEditingController();
+  TextEditingController tecSenha = TextEditingController();
+  TextEditingController tecEmpresa = TextEditingController();
   UsuarioRepository usuarioRepository = UsuarioRepository();
   Usuario? usuarioLogado;
   final formKey = GlobalKey<FormState>();

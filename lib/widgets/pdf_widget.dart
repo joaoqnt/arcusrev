@@ -1,11 +1,9 @@
+import 'package:arcusrev/model/empresa.dart';
 import 'package:arcusrev/model/viagem.dart';
 import 'package:brasil_fields/brasil_fields.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../utils/dataformato_util.dart';
 
 class PdfWidget {
@@ -349,15 +347,15 @@ class PdfWidget {
     );
   }
 
-  Future<void> gerarRelatorio({Viagem? viagem, String? cnpj}) async {
+  Future<void> gerarRelatorio(Empresa empresa,{Viagem? viagem}) async {
     final pdf = pw.Document();
-    final netImage = await networkImage('http://mundolivre.dyndns.info:8080/catalogos/$cnpj/0_0.png');
+    final netImage = await networkImage(empresa.img);
     pdf.addPage(
       pw.MultiPage(
         maxPages: 100,
           pageFormat: PdfPageFormat.a4,
           header: (pw.Context context) {
-            return _headerOfPdf(viagem!,netImage); // Cabeçalho fixo
+            return _headerOfPdf(viagem!,netImage);
           },
           build: (pw.Context context) => <pw.Widget>[
             _mainOfPdf(viagem!),

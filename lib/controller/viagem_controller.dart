@@ -30,6 +30,8 @@ class ViagemController{
     return true;
   }
 
+
+
   getTransportes(){
     transportes = viagemRepository.transportes;
   }
