@@ -14,7 +14,6 @@ class ViagemRepository{
     var http = Dio();
     try{
       String viagemEncoded = jsonEncode({"1" : [viagem.toJson()]});
-      print(viagem.toJson());
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/atualiza_viagem',
         options: Options(headers:{
@@ -26,6 +25,29 @@ class ViagemRepository{
     }catch(e){
       print("erro a atualizar viagem $e");
     }
+  }
+
+  Future<List<Viagem>> filterDate(String cnpj, String date) async{
+    List<Viagem> viagens = [];
+    var http = Dio();
+    Response response = await http.get(
+        'http://mundolivre.dyndns.info:8083/api/v5/et2erp/query/filter_date?FILTRO=$date',
+        options: Options(headers: {'tenant': 'arcusrev_$cnpj'}));
+    if(response.statusCode == 200){
+      var results = response.data['resultSelects'];
+      results['viagem'].forEach((element) async {
+        Viagem viagem = Viagem.fromJson(element);
+        viagens.add(viagem);
+        transportes.where((transporte) => transporte.id == element['TRANSPORTE']).forEach((transporte) {
+          viagem.transporte = transporte;
+        });
+        results['despesa'].where((map)=> map['VIAGEM'] == viagem.id).forEach((elemento){
+          Despesa despesa = Despesa.fromJson(elemento);
+          viagem.despesas.add(despesa);
+        });
+      });
+    }
+    return viagens;
   }
 
   Future<List<Viagem>> getAll(String cnpj, {int? index}) async{

@@ -19,11 +19,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LoginView(),
+      title: "Relatório de Viagem",
+
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
-      supportedLocales: [const Locale('pt', 'BR')],
+      supportedLocales: [Locale('pt', 'BR')],
       theme: ThemeData(
           primarySwatch: Colors.deepOrange
       ),

@@ -5,7 +5,6 @@ import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/widgets/elevatedbutton_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import '../model/transporte.dart';
 import '../utils/dataformato_util.dart';
 import '../widgets/circularprogress_widget.dart';
@@ -46,7 +45,75 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Dados Viagem")),
+      appBar: AppBar(
+        title: Text("Dados Viagem"),
+        actions: [
+          IconButton(
+              onPressed: () async{
+                showDialog(context: context, builder: (context) {
+                  return AlertDialog(
+                    title: Text("Confirmação"),
+                    content: Text(widget.tipo == 'I' ? "Deseja cadastrar essa viagem?" : "Deseja atualizar essa viagem?"),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Não")
+                      ),
+                      TextButton(
+                          onPressed: () async{
+                            if(widget.tipo == 'I' && viagemCadastroController.formKey.currentState!.validate()){
+                              await viagemCadastroController.insert( widget.cnpj!, context, widget.viagemController!, widget.usuarioLogado!);
+                              Navigator.of(context).pop();
+                            }
+                            if(widget.tipo != 'I'){
+                              await viagemCadastroController.update(widget.viagemSelected!, widget.cnpj!, context, widget.viagemController!);
+                              Navigator.of(context).pop();
+                            }
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Sim")
+                      ),
+                    ],
+                  );
+                });
+              },
+              icon: Icon(Icons.save)
+          ),
+          widget.tipo == "I" ? Container() :
+          Padding(
+            padding: const EdgeInsets.only(right:8.0),
+            child: IconButton(
+                onPressed: () async{
+                  showDialog(context: context, builder: (context) {
+                    return AlertDialog(
+                      title: Text("Confirmação"),
+                      content: Text("Deseja apagar essa viagem?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Não")
+                        ),
+                        TextButton(
+                            onPressed: () async{
+                              await viagemCadastroController.delete(widget.viagemSelected!, widget.cnpj!, context, widget.usuarioLogado!);
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Sim")
+                        ),
+                      ],
+                    );
+                  });
+                },
+                icon: Icon(Icons.delete)
+            ),
+          )
+        ]
+      ),
       body: SingleChildScrollView(
         child: Form(
           key: viagemCadastroController.formKey,
@@ -106,48 +173,60 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
                 child: textFormFieldWidget.criaTff(viagemCadastroController.tecFinalidade, "Finalidade",tamanho: 30),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
-                child: TextFormField(
-                  onTap: () async{
-                    await viagemCadastroController.setDateSaida(context,tipo: widget.tipo,viagem: widget.viagemSelected,);
-                  },
-                  onChanged: (value) {
-                    viagemCadastroController.tecDatasaida.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateSaida,"dd/MM/yyyy");
-                  },
-                  controller: viagemCadastroController.tecDatasaida,
-                  decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Saida"),
-                  keyboardType: TextInputType.none,
-                  validator: (value) {
-                    if (value == null || value.isEmpty ) {
-                      if(value == null || value.isEmpty ){
-                        return 'O campo não pode ser vazio';
-                      }
-                      return null;
-                    }
-                  },
-                )
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0, right: 8, left: 8),
-                child: TextFormField(
-                  onTap: () async{
-                    await viagemCadastroController.setDateChegada(context,tipo: widget.tipo,viagem: widget.viagemSelected);
-                  },
-                  onChanged: (value) {
-                    viagemCadastroController.tecDatachegada.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateChegada,"dd/MM/yyyy");
-                  },
-                  controller: viagemCadastroController.tecDatachegada,
-                  decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Chegada"),
-                  keyboardType: TextInputType.none,
-                  validator: (value) {
-                    if (value == null || value.isEmpty ) {
-                      if(value == null || value.isEmpty ){
-                        return 'O campo não pode ser vazio';
-                      }
-                      return null;
-                    }
-                  },
-                )
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8, left: 8),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        child: TextFormField(
+                          onTap: () async{
+                            await viagemCadastroController.setDateSaida(context,tipo: widget.tipo,viagem: widget.viagemSelected,);
+                          },
+                          onChanged: (value) {
+                            viagemCadastroController.tecDatasaida.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateSaida,"dd/MM/yyyy");
+                          },
+                          controller: viagemCadastroController.tecDatasaida,
+                          decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Saida"),
+                          keyboardType: TextInputType.none,
+                          validator: (value) {
+                            if (value == null || value.isEmpty ) {
+                              if(value == null || value.isEmpty ){
+                                return 'O campo não pode ser vazio';
+                              }
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right:8.0),
+                          child: TextFormField(
+                            onTap: () async{
+                              await viagemCadastroController.setDateChegada(context,tipo: widget.tipo,viagem: widget.viagemSelected,);
+                            },
+                            onChanged: (value) {
+                              viagemCadastroController.tecDatachegada.text = DataFormatoUtil.getDate(viagemCadastroController.selectedDateSaida,"dd/MM/yyyy");
+                            },
+                            controller: viagemCadastroController.tecDatachegada,
+                            decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Data Chegada"),
+                            keyboardType: TextInputType.none,
+                            validator: (value) {
+                              if (value == null || value.isEmpty ) {
+                                if(value == null || value.isEmpty ){
+                                  return 'O campo não pode ser vazio';
+                                }
+                                return null;
+                              }
+                            },
+                          ),
+                        )
+                    )
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8, right: 8.0, left: 8),
@@ -156,35 +235,35 @@ class _ViagemDadosViewState extends State<ViagemDadosView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  widget.tipo == 'I' ? Container() :
-                  ElevatedButton.icon(
-                      onPressed: () async{
-                        await viagemCadastroController.delete(widget.viagemSelected!, widget.cnpj!, context, widget.usuarioLogado!);
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Icons.delete_outline),
-                      label: Text('Excluir'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.redAccent,
-                      )
-                  ),
-                  ElevatedButton.icon(
-                      onPressed: () async{
-                        if(widget.tipo == 'I' && viagemCadastroController.formKey.currentState!.validate()){
-                          await viagemCadastroController.insert( widget.cnpj!, context, widget.viagemController!, widget.usuarioLogado!);
-                          Navigator.of(context).pop();
-                        }
-                        if(widget.tipo != 'I'){
-                          await viagemCadastroController.update(widget.viagemSelected!, widget.cnpj!, context, widget.viagemController!);
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      icon: Icon(Icons.save_outlined),
-                      label: Text('Salvar'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.lightGreen,
-                      )
-                  ),
+                  // widget.tipo == 'I' ? Container() :
+                  // ElevatedButton.icon(
+                  //     onPressed: () async{
+                  //       await viagemCadastroController.delete(widget.viagemSelected!, widget.cnpj!, context, widget.usuarioLogado!);
+                  //       Navigator.of(context).pop();
+                  //     },
+                  //     icon: Icon(Icons.delete_outline),
+                  //     label: Text('Excluir'),
+                  //     style: ElevatedButton.styleFrom(
+                  //       primary: Colors.redAccent,
+                  //     )
+                  // ),
+                  // ElevatedButton.icon(
+                  //     onPressed: () async{
+                  //       if(widget.tipo == 'I' && viagemCadastroController.formKey.currentState!.validate()){
+                  //         await viagemCadastroController.insert( widget.cnpj!, context, widget.viagemController!, widget.usuarioLogado!);
+                  //         Navigator.of(context).pop();
+                  //       }
+                  //       if(widget.tipo != 'I'){
+                  //         await viagemCadastroController.update(widget.viagemSelected!, widget.cnpj!, context, widget.viagemController!);
+                  //         Navigator.of(context).pop();
+                  //       }
+                  //     },
+                  //     icon: Icon(Icons.save_outlined),
+                  //     label: Text('Salvar'),
+                  //     style: ElevatedButton.styleFrom(
+                  //       primary: Colors.lightGreen,
+                  //     )
+                  // ),
                 ],
               )
             ],

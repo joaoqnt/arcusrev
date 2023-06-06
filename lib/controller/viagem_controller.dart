@@ -60,28 +60,33 @@ class ViagemController{
     busca == null ? null : viagensFiltered = viagensAll.where((element) =>
         element.motorista.toString().toLowerCase().contains(busca.toString().toLowerCase())||
             element.id.toString().contains(busca.toString())||
-            element.destino.toString().toLowerCase().contains(busca.toString().toLowerCase())||
-            DataFormatoUtil.getDate(element.datasaida, 'dd/MM/yyyy').toString().contains(busca.toString())||
-            DataFormatoUtil.getDate(element.dataregresso,'dd/MM/yyyy').toString().contains(busca.toString())
+            element.destino.toString().toLowerCase().contains(busca.toString().toLowerCase())
     ).toList();
+  }
+
+  Future filterDate(String cnpj) async{
+    String data = DataFormatoUtil.getDate(selectedDate,'yyyy-MM-dd');
+    viagensFiltered = await viagemRepository.filterDate(cnpj,data);
   }
 
   onChange(String value){
     filtroSelected = value;
+    value != 'Data' ? viagensFiltered = viagensAll : null;
+    tecBusca.clear();
   }
 
-  Future setDate(BuildContext context) async{
+  Future setDate(BuildContext context, String cnpj) async{
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(DateTime.now().year),
+      firstDate: DateTime(DateTime.now().year - 10),
       lastDate: DateTime(DateTime.now().year + 1),
     );
 
     if (picked != null && picked != selectedDate) {
       selectedDate = picked;
       tecBusca.text = DataFormatoUtil.getDate(selectedDate,"dd/MM/yyyy");
-      filterOs(busca:tecBusca.text);
+      await filterDate(cnpj);
     }
   }
 

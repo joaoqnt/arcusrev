@@ -39,9 +39,9 @@ class DespesasController{
     despesa.data = selectedDate;
     despesa.nome = despesaSelected;
     despesa.nota = tecDocumento.text;
-    despesa.local = tecLocalidade.text;
+    despesa.local = tecLocalidade.text.toUpperCase();
     despesa.valor = double.tryParse(tecValor.text);
-    despesa.fornecedor = tecFornecedor.text;
+    despesa.fornecedor = tecFornecedor.text.toUpperCase();
     despesaRepository.insertDespesa(despesa,viagem.id!,cnpj);
     viagem.despesas.add(despesa);
   }
@@ -51,7 +51,6 @@ class DespesasController{
     try{
       despesaRepository.updateDespesa(despesa, viagem,cnpj);
     }catch(e){
-      print(despesa.toJson());
       print("erro ao atualizar despesa $e");
     }
   }

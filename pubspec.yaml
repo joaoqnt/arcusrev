@@ -50,6 +50,7 @@ dependencies:
   autocomplete_textfield: ^2.0.1
   flutter_speed_dial: ^7.0.0
   back_button_interceptor: ^6.0.2
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:

@@ -114,8 +114,8 @@
 								:NOME, 
 								:DATA, 
 								:NOTA, 
-								:FORNECEDOR, 
-								:LOCAL, 
+								upper(:FORNECEDOR),
+								upper(:LOCAL),
 								:VALOR);
 						</data>
 					</insert>
@@ -129,8 +129,8 @@
 								DESNOME = :NOME,
 								DESDATA = :DATA,
 								DESNOTA = :NOTA,
-								DESFORNECEDOR = :FORNECEDOR,
-								DESLOCAL = :LOCAL,
+								DESFORNECEDOR = upper(:FORNECEDOR),
+								DESLOCAL = upper(:LOCAL),
 								DESVALOR = :VALOR
 							WHERE VIACODIGO = :VIAGEM 
 								AND DESCODIGO = :ID
@@ -154,14 +154,14 @@
 							r.viacodigo as ID,
 							r.empcodigo as empresa,
 							r.tracodigo as transporte,
-							r.viadestino as destino,
-							r.parnome as motorista,
-							coalesce(r.viafinalidade,'Nenhuma finalidade relatada') as finalidade,
-							coalesce(r.viaacompanhantes,'Não') as acompanhantes,
+							upper(r.viadestino) as destino,
+							upper(r.parnome) as motorista,
+							coalesce(upper(r.viafinalidade),'NENHUMA FINALIDADE RELATADA') as finalidade,
+							coalesce(upper(r.viaacompanhantes),'NÃO') as acompanhantes,
 							r.viadatsaida as datasaida,
 							r.viadatregresso as dataregresso,
 							r.parcodigoinc as responsavel,
-							coalesce(r.viaobservacao,'Sem observação') as observacao
+							coalesce(upper(r.viaobservacao),'SEM OBSERVACAO') as observacao
 						from rviviagem r
 						order by r.viacodigo desc
 					</data>
@@ -180,8 +180,8 @@
 							d.desnome as nome,
 							d.desdata as data,
 							d.desnota as nota,
-							d.desfornecedor as fornecedor,
-							d.deslocal as local,
+							upper(d.desfornecedor) as fornecedor,
+							upper(d.deslocal) as local,
 							d.desvalor as valor
 						from rvidespesa d
 							inner join viagem v on (v.id = d.viacodigo)
@@ -205,6 +205,50 @@
 					</data>
 				</funcionarios>
 			</getall>
+			<filter_date>
+				<viagem>
+					<data>
+						select
+							r.viacodigo as ID,
+							r.empcodigo as empresa,
+							r.tracodigo as transporte,
+							upper(r.viadestino) as destino,
+							upper(r.parnome) as motorista,
+							coalesce(upper(r.viafinalidade),'NENHUMA FINALIDADE RELATADA') as finalidade,
+							coalesce(upper(r.viaacompanhantes),'NÃO') as acompanhantes,
+							r.viadatsaida as datasaida,
+							r.viadatregresso as dataregresso,
+							r.parcodigoinc as responsavel,
+							coalesce(upper(r.viaobservacao),'SEM OBSERVACAO') as observacao
+						from rviviagem r
+						where r.viadatsaida = :FILTRO or r.viadatregresso = :FILTRO
+						order by r.viacodigo desc
+					</data>
+				</viagem>
+				<despesa>
+					<data>
+						with viagem as (
+							select 
+								r.viacodigo as ID
+							from rviviagem r
+							where r.viadatsaida = :FILTRO or r.viadatregresso = :FILTRO
+							order by r.viacodigo desc
+						)
+						select
+							d.viacodigo as viagem,
+							d.descodigo as id,
+							d.desnome as nome,
+							d.desdata as data,
+							d.desnota as nota,
+							upper(d.desfornecedor) as fornecedor,
+							upper(d.deslocal) as local,
+							d.desvalor as valor
+						from rvidespesa d
+							inner join viagem v on (v.id = d.viacodigo)
+						order by d.descodigo asc,desdata asc
+					</data>
+				</despesa>
+			</filter_date>
 		</query>
 	</files>		
 </integrador>

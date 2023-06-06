@@ -52,7 +52,7 @@ class PdfWidget {
     );
   }
 
-  _mainOfPdf(Viagem viagem){
+  _mainOfPdf(Viagem viagem,{Empresa? empresa}){
     return pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.start,
         children: [
@@ -107,7 +107,7 @@ class PdfWidget {
               children: [
                 pw.Padding(
                     padding: pw.EdgeInsets.only(bottom: 4),
-                    child: pw.Text("Cocal Cereais LTDA",style: pw.TextStyle(fontSize: 10))
+                    child: pw.Text("${empresa!.nome}",style: pw.TextStyle(fontSize: 10))
                 ),
                 pw.Padding(
                     padding: pw.EdgeInsets.only(bottom: 4),
@@ -358,7 +358,7 @@ class PdfWidget {
             return _headerOfPdf(viagem!,netImage);
           },
           build: (pw.Context context) => <pw.Widget>[
-            _mainOfPdf(viagem!),
+            _mainOfPdf(viagem!,empresa: empresa),
             tableOfPdf(viagem),
             endOfPdf(viagem),
             _assinatura()

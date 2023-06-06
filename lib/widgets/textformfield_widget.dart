@@ -1,4 +1,3 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -48,32 +47,4 @@ class TextFormFieldWidget{
     );
   }
 
-  // Widget autocompleteTFF(dynamic key, dynamic sugestoes){
-  //   return AutoCompleteTextField<String>(
-  //     key: key,
-  //     suggestions: sugestoes,
-  //     clearOnSubmit: false,
-  //     textInputAction: TextInputAction.next,
-  //     itemFilter: (item, query) {
-  //       return item.toLowerCase().startsWith(query.toLowerCase());
-  //     },
-  //     itemSorter: (a, b) {
-  //       return a.compareTo(b);
-  //     },
-  //     itemSubmitted: (item) {
-  //       setState(() {
-  //         valorSelecionado = item;
-  //       });
-  //     },
-  //     itemBuilder: (context, item) {
-  //       return ListTile(
-  //         title: Text(item),
-  //       );
-  //     },
-  //     decoration: InputDecoration(
-  //       labelText: 'Digite um valor',
-  //     ),
-  //     controller: TextEditingController(text: valorSelecionado),
-  //   ),
-  // }
 }

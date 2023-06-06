@@ -1,13 +1,10 @@
-import 'dart:io';
-
 import 'package:arcusrev/controller/login_controller.dart';
 import 'package:arcusrev/view/viagens_view.dart';
 import 'package:arcusrev/widgets/circularprogress_widget.dart';
 import 'package:arcusrev/widgets/textformfield_widget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:printing/printing.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -20,6 +17,7 @@ class _LoginViewState extends State<LoginView> {
   LoginController loginController = LoginController();
   CircularProgressWidget circularProgressWidget = CircularProgressWidget();
   TextFormFieldWidget textFormFieldWidget = TextFormFieldWidget();
+  UtilBrasilFields utilBrasilFields = UtilBrasilFields();
 
   @override
   void initState() {
@@ -38,8 +36,8 @@ class _LoginViewState extends State<LoginView> {
               Container(
                 padding: EdgeInsets.all(10),
                 width:  MediaQuery.of(context).size.width < 650 ?
-                MediaQuery.of(context).size.width* 0.8 : MediaQuery.of(context).size.width* 0.4 ,
-                height: MediaQuery.of(context).size.height * 0.8,
+                MediaQuery.of(context).size.width* 0.8 : MediaQuery.of(context).size.width* 0.3 ,
+                height: MediaQuery.of(context).size.height * 0.85,
                 decoration: BoxDecoration(
                   color: Colors.white,
                     boxShadow:[
@@ -63,7 +61,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       textFormFieldWidget.criaTff(loginController.tecUsuario, "Usuário",tamanho: 15),
                       Padding(
-                        padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
+                        padding: const EdgeInsets.only(top:10.0),
                         child: textFormFieldWidget.criaTff(
                             loginController.tecSenha,
                             "Senha",
@@ -80,7 +78,28 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:10.0,bottom: 10.0),
-                        child: textFormFieldWidget.criaTff(loginController.tecEmpresa, "Cnpj da empresa",tamanho: 14),
+                        child: TextFormField(
+                          controller: loginController.tecEmpresa,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CnpjInputFormatter()
+                            ],
+                            decoration: InputDecoration(
+                              labelText: "Cnpj da empresa",
+                              border: OutlineInputBorder(),
+                            ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty || UtilBrasilFields.removeCaracteres(value).length > 14 || UtilBrasilFields.removeCaracteres(value).length < 14 ) {
+                              if(value == null || value.isEmpty ){
+                                return 'O campo não pode ser vazio';
+                              }else{
+                                return 'O tamanho para esse campo é de 14 caracter(es)';
+                              }
+                            }
+                            return null;
+                          }
+                        )
+                          // textFormFieldWidget.criaTff(loginController.tecEmpresa, "Cnpj da empresa",tamanho: 14),
                       ),
                       Row(
                         children: [
@@ -98,7 +117,7 @@ class _LoginViewState extends State<LoginView> {
                                     circularProgressWidget.hideCircularProgress(context);
                                     loginController.existe == false ? null : Navigator.push(
                                         context, MaterialPageRoute(builder: (BuildContext) =>
-                                        ViagensView(loginController.usuarioLogado!,loginController.tecEmpresa.text)
+                                        ViagensView(loginController.usuarioLogado!,UtilBrasilFields.removeCaracteres(loginController.tecEmpresa.text))
                                     ));
                                   }
                                 },

@@ -59,7 +59,7 @@ class AlertDialogWidget{
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(bottom: 8.0,left: 8, right: 8),
                       child: Row(
                         children: [
                           Expanded(child: textFormFieldWidget.criaTff(tec2!, labelText2!,tamanho:t2))
@@ -67,7 +67,7 @@ class AlertDialogWidget{
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(bottom: 8.0,left: 8, right: 8),
                       child: Row(
                         children: [
                           Expanded(child: textFormFieldWidget.criaTff(tec3!, labelText3!,tamanho:t3))
@@ -75,8 +75,31 @@ class AlertDialogWidget{
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
+                      padding: const EdgeInsets.only(bottom: 8.0,left: 8, right: 8),
+                      child: MediaQuery.of(context).size.width <= 650 ? Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0,),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 100,
+                                  child: textFormFieldWidget.criaTff(tec4!, labelText4!,numeric: true,tamanho:t4),
+                                ),
+                                Expanded(child: Padding(
+                                  padding: const EdgeInsets.only(left:8.0),
+                                  child: textFormField5!,
+                                ))
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(child: textFormField6!)
+                            ],
+                          ),
+                        ],
+                      ) : Row(
                         children: [
                           SizedBox(
                             width: 100,

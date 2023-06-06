@@ -10,7 +10,6 @@ class DespesaRepository{
     var http = Dio();
     try{
       String despesaEncoded = jsonEncode({"1" : [despesa.toJson(viagem: viagem)]});
-      print(despesaEncoded);
       Response response = await http.post(
           'http://mundolivre.dyndns.info:8083/api/v5/json/et2erp/query/cadastra_despesa',
           options: Options(headers:{

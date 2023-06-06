@@ -40,10 +40,6 @@ class _ViagensViewState extends State<ViagensView> {
           actions: [
             IconButton(
                 onPressed: () {
-                  print(viagemController.transportes.length);
-                  print(widget.usuarioLogado.id);
-                  print(viagemController.getMaxId());
-                  print(widget.cnpj);
                   Navigator.push(
                       context, MaterialPageRoute(builder: (context) =>
                       ViagemDadosView(
@@ -102,7 +98,7 @@ class _ViagensViewState extends State<ViagensView> {
                             labelText: "Pesquisa",
                             fillColor: Colors.grey,
                             hintText: viagemController.filtroSelected == "Data" ?
-                            "Pesquise pela data saida/chegada" : "Funcionario/viagem/destino/datas"
+                            "Pesquise pela data saida/chegada" : "Funcionario/viagem/destino"
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -110,9 +106,8 @@ class _ViagensViewState extends State<ViagensView> {
                             });
                           },
                           onTap: () async{
-                            viagemController.filtroSelected == 'Data' ? await viagemController.setDate(context) : null;
+                            viagemController.filtroSelected == 'Data' ? await viagemController.setDate(context,widget.cnpj) : null;
                             viagemController.filtroSelected == 'Data' ? setState((){}) : null;
-                            print(viagemController.selectedDate);
                           }
                         )
                       ),
@@ -137,7 +132,7 @@ class _ViagensViewState extends State<ViagensView> {
                               viagemController.viagemSelected!,
                               viagemController,
                               widget.cnpj)
-                          )).then((value) => null);
+                          )).then((value) => init());
                         },
                         child: Container(
                           child: Row(
@@ -187,7 +182,8 @@ class _ViagensViewState extends State<ViagensView> {
                                               viagemController: viagemController)
                                           )).then((value) => init());
                                         },
-                                        icon: Icon(Icons.edit_outlined))
+                                        icon: Icon(Icons.edit_outlined)
+                                    )
                                   ],
                                 )
                               ]

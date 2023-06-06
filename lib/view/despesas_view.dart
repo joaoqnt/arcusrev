@@ -112,9 +112,9 @@ class _DespesasViewState extends State<DespesasView> {
                                   widget.cnpj,
                                   valor: alertDialogWidget.valor);
                               await widget.viagemController.getAll(widget.cnpj);
+                              setState(() {});
                               circularProgressWidget.hideCircularProgress(context);
                               Navigator.of(context).pop();
-                              setState(() {});
                             }
                           },
                           icon: Icon(Icons.save_outlined),
@@ -216,17 +216,47 @@ class _DespesasViewState extends State<DespesasView> {
                               ),
                               botao1: ElevatedButton.icon(
                                   onPressed: () async{
-                                    circularProgressWidget.showCircularProgress(context);
-                                    await despesasController.deleteDespesas(
-                                        widget.viagemSelected,
-                                        index,
-                                        widget.cnpj
-                                    );
+                                    showDialog(context: context, builder: (context) {
+                                      return AlertDialog(
+                                        title: Text("Confirmação"),
+                                        content: Text("Deseja apagar essa despesa?"),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("Não")
+                                          ),
+                                          TextButton(
+                                              onPressed: () async{
+                                                circularProgressWidget.showCircularProgress(context);
+                                                await despesasController.deleteDespesas(
+                                                    widget.viagemSelected,
+                                                    index,
+                                                    widget.cnpj
+                                                );
+                                                await widget.viagemController.getAll(widget.cnpj);
+                                                circularProgressWidget.hideCircularProgress(context);
+                                                setState(() {});
+                                                Navigator.of(context).pop();
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("Sim")
+                                          ),
+                                        ],
+                                      );
+                                    });
+                                    // circularProgressWidget.showCircularProgress(context);
+                                    // await despesasController.deleteDespesas(
+                                    //     widget.viagemSelected,
+                                    //     index,
+                                    //     widget.cnpj
+                                    // );
                                     // setState(() {});
-                                    await widget.viagemController.getAll(widget.cnpj);
-                                    circularProgressWidget.hideCircularProgress(context);
-                                    setState(() {});
-                                    Navigator.of(context).pop();
+                                    // await widget.viagemController.getAll(widget.cnpj);
+                                    // circularProgressWidget.hideCircularProgress(context);
+                                    // setState(() {});
+                                    // Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.save_outlined),
                                   label: Text('Excluir'),
@@ -261,7 +291,7 @@ class _DespesasViewState extends State<DespesasView> {
           ),
         ],
       ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: SpeedDial(
           icon: Icons.sort,
           activeIcon: Icons.close,
@@ -285,7 +315,6 @@ class _DespesasViewState extends State<DespesasView> {
               onTap: (){
                 despesasController.orderBy(widget.viagemSelected,type: 'id',desc: true);
                 setState(() {
-                  print("Data");
                 });
               },
             ),
@@ -296,7 +325,6 @@ class _DespesasViewState extends State<DespesasView> {
               onTap: (){
                 despesasController.orderBy(widget.viagemSelected,type: 'date',desc: false);
                 setState(() {
-                  print("Data");
                 });
               },
             ),
@@ -306,7 +334,6 @@ class _DespesasViewState extends State<DespesasView> {
               onTap: (){
                 despesasController.orderBy(widget.viagemSelected,type: 'date',desc: true);
                 setState(() {
-                  print("Data");
                 });
               },
             )

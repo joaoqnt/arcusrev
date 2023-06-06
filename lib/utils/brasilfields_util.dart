@@ -1,3 +1,6 @@
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter/material.dart';
+
 class BrasilFields{
   String adicionarSeparador(String texto) {
     var valorFinal = "";
@@ -36,5 +39,14 @@ class BrasilFields{
     } else {
       return formatted;
     }
+  }
+
+  static String obterCnpj(String cnpj) {
+    return CNPJValidator.format(cnpj);
+  }
+
+  static String removeCaracteres(String valor) {
+    assert(valor.isNotEmpty);
+    return valor.replaceAll(RegExp('[^0-9a-zA-Z]+'), '');
   }
 }
