@@ -38,6 +38,7 @@ class _ViagensViewState extends State<ViagensView> {
       appBar: AppBar(
           title: Text("Viagens"),
           actions: [
+            widget.usuarioLogado.administrador == 'N' ? Container() :
             IconButton(
                 onPressed: () {
                   Navigator.push(

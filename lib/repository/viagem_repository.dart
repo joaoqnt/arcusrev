@@ -8,7 +8,6 @@ import 'package:dio/dio.dart';
 
 class ViagemRepository{
   List<Transporte> transportes = [];
-  List<Usuario> usuarios = [];
 
   Future updateViagem(Viagem viagem, String cnpj) async{
     var http = Dio();
@@ -68,10 +67,6 @@ class ViagemRepository{
             transportes.add(transporte);
           });
         }
-        results['funcionarios'].forEach((funcionarios){
-          Usuario usuario = Usuario.fromJson(funcionarios);
-          usuarios.add(usuario);
-        });
         results['viagem'].forEach((element) async{
           Viagem viagem = Viagem.fromJson(element);
           transportes.where((transporte) => transporte.id == element['TRANSPORTE']).forEach((transporte) {

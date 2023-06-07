@@ -114,8 +114,8 @@
 								:NOME, 
 								:DATA, 
 								:NOTA, 
-								:FORNECEDOR, 
-								:LOCAL, 
+								upper(:FORNECEDOR),
+								upper(:LOCAL),
 								:VALOR);
 						</data>
 					</insert>
@@ -129,8 +129,8 @@
 								DESNOME = :NOME,
 								DESDATA = :DATA,
 								DESNOTA = :NOTA,
-								DESFORNECEDOR = :FORNECEDOR,
-								DESLOCAL = :LOCAL,
+								DESFORNECEDOR = upper(:FORNECEDOR),
+								DESLOCAL = upper(:LOCAL),
 								DESVALOR = :VALOR
 							WHERE VIACODIGO = :VIAGEM 
 								AND DESCODIGO = :ID
@@ -193,17 +193,6 @@
 						select t.tracodigo as id, t.tranome as nome from rvitransporte t
 					</data>
 				</transporte>
-				<funcionarios>
-					<data>
-						select
-							pf.parcodigo as id,
-							gp.parnome as nome,
-							'N' as administrador
-						from genparcei gp
-							inner join pesfuncio pf on (gp.parcodigo = pf.parcodigo and pf.funmotorista = 'S')
-						order by gp.parnome
-					</data>
-				</funcionarios>
 			</getall>
 			<filter_date>
 				<viagem>

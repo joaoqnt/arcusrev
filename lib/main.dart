@@ -25,7 +25,9 @@ class _MyAppState extends State<MyApp> {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate
       ],
-      supportedLocales: [Locale('pt', 'BR')],
+      supportedLocales: [
+        Locale('pt', 'BR')
+      ],
       theme: ThemeData(
           primarySwatch: Colors.deepOrange
       ),
