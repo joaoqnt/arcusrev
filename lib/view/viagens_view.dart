@@ -131,7 +131,6 @@ class _ViagensViewState extends State<ViagensView> {
                               context, MaterialPageRoute(builder: (BuildContext) => DespesasView(
                               widget.usuarioLogado,
                               viagemController.viagemSelected!,
-                              viagemController,
                               widget.cnpj)
                           )).then((value) => init());
                         },

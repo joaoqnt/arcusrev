@@ -1,5 +1,4 @@
 import 'package:arcusrev/controller/despesas_controller.dart';
-import 'package:arcusrev/controller/viagem_controller.dart';
 import 'package:arcusrev/model/usuario.dart';
 import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
@@ -16,12 +15,10 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 class DespesasView extends StatefulWidget {
   Viagem viagemSelected;
   Usuario usuarioLogado;
-  ViagemController viagemController;
   String cnpj;
   DespesasView(
       this.usuarioLogado,
       this.viagemSelected,
-      this.viagemController,
       this.cnpj,
       {Key? key}) : super(key: key);
 
@@ -69,7 +66,12 @@ class _DespesasViewState extends State<DespesasView> {
                       t4: 6,
                       labelText4: "Nota",
                       textFormField5: TextFormField(
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CentavosInputFormatter(casasDecimais: 2,moeda: true)
+                        ],
+                        textAlign: TextAlign.right,
+                        textDirection: TextDirection.rtl,
                         controller: despesasController.tecValor,
                         decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
                         keyboardType: TextInputType.numberWithOptions(),
@@ -106,14 +108,12 @@ class _DespesasViewState extends State<DespesasView> {
                       botao2: ElevatedButton.icon(
                           onPressed: () async{
                             if (alertDialogWidget.formKey.currentState!.validate()){
-                              circularProgressWidget.showCircularProgress(context);
                               await despesasController.insertDespesas(
                                   widget.viagemSelected,
                                   widget.cnpj,
-                                  valor: alertDialogWidget.valor);
-                              await widget.viagemController.getAll(widget.cnpj);
+                                  valor: alertDialogWidget.valor,
+                                  context: context);
                               setState(() {});
-                              circularProgressWidget.hideCircularProgress(context);
                               Navigator.of(context).pop();
                             }
                           },
@@ -198,10 +198,14 @@ class _DespesasViewState extends State<DespesasView> {
                               tec4: despesasController.tecDocumento,
                               labelText4: "Nota",
                               textFormField5: TextFormField(
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  CentavosInputFormatter(casasDecimais: 2,moeda: true)
+                                ],
                                 controller: despesasController.tecValor,
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
                                 decoration: InputDecoration(border: OutlineInputBorder(),labelText: "Valor"),
-                                keyboardType: TextInputType.numberWithOptions(),
                               ),
                               textFormField6: TextFormField(
                                 onTap: () async{
@@ -229,14 +233,12 @@ class _DespesasViewState extends State<DespesasView> {
                                           ),
                                           TextButton(
                                               onPressed: () async{
-                                                circularProgressWidget.showCircularProgress(context);
                                                 await despesasController.deleteDespesas(
                                                     widget.viagemSelected,
                                                     index,
-                                                    widget.cnpj
+                                                    widget.cnpj,
+                                                    context: context
                                                 );
-                                                await widget.viagemController.getAll(widget.cnpj);
-                                                circularProgressWidget.hideCircularProgress(context);
                                                 setState(() {});
                                                 Navigator.of(context).pop();
                                                 Navigator.of(context).pop();
@@ -246,17 +248,6 @@ class _DespesasViewState extends State<DespesasView> {
                                         ],
                                       );
                                     });
-                                    // circularProgressWidget.showCircularProgress(context);
-                                    // await despesasController.deleteDespesas(
-                                    //     widget.viagemSelected,
-                                    //     index,
-                                    //     widget.cnpj
-                                    // );
-                                    // setState(() {});
-                                    // await widget.viagemController.getAll(widget.cnpj);
-                                    // circularProgressWidget.hideCircularProgress(context);
-                                    // setState(() {});
-                                    // Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.save_outlined),
                                   label: Text('Excluir'),
@@ -266,14 +257,14 @@ class _DespesasViewState extends State<DespesasView> {
                               ),
                               botao2: ElevatedButton.icon(
                                   onPressed: () async{
-                                    circularProgressWidget.showCircularProgress(context);
+                                    //print(double.tryParse(UtilBrasilFields.removerSimboloMoeda(despesasController.replaceValor())));
                                     await despesasController.updateDespesas(
                                         widget.viagemSelected.despesas[index],
-                                        widget.viagemSelected.id!,
+                                        widget.viagemSelected,
                                         widget.cnpj,
-                                        valor: alertDialogWidget.valor);
-                                    await widget.viagemController.getAll(widget.cnpj);
-                                    circularProgressWidget.hideCircularProgress(context);                                     // Navigator.of(context).pop();
+                                        valor: alertDialogWidget.valor,
+                                        context: context);
+                                    // Navigator.of(context).pop();
                                     setState(() {});
                                     Navigator.of(context).pop();
                                   },
@@ -291,7 +282,7 @@ class _DespesasViewState extends State<DespesasView> {
           ),
         ],
       ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
         floatingActionButton: SpeedDial(
           icon: Icons.sort,
           activeIcon: Icons.close,

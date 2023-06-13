@@ -65,6 +65,7 @@ class ViagemRepository{
           results['transporte'].forEach((element) async{
             Transporte transporte = Transporte.fromJson(element);
             transportes.add(transporte);
+
           });
         }
         results['viagem'].forEach((element) async{

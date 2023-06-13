@@ -8,7 +8,7 @@
 						select
 							gu.usucodigo as id,
 							gu.usulogin as nome,
-							'S' as administrador
+							coalesce(gu.usuadministra,'N') as administrador
 						from genusuari gu
 						where gu.usulogin = :FUNUSUARIO
 							and gu.ususenha = :FUNSENHAAPP
@@ -116,7 +116,7 @@
 								:NOTA, 
 								upper(:FORNECEDOR),
 								upper(:LOCAL),
-								:VALOR);
+								coalesce(:VALOR,0));
 						</data>
 					</insert>
 				</insercao>
@@ -182,7 +182,7 @@
 							d.desnota as nota,
 							upper(d.desfornecedor) as fornecedor,
 							upper(d.deslocal) as local,
-							d.desvalor as valor
+							coalesce(d.desvalor,0) as valor
 						from rvidespesa d
 							inner join viagem v on (v.id = d.viacodigo)
 						order by d.descodigo asc,desdata asc
@@ -238,6 +238,24 @@
 					</data>
 				</despesa>
 			</filter_date>
+			<get_despesa>
+				<despesa>
+					<data>
+						select
+							d.viacodigo as viagem,
+							d.descodigo as id,
+							d.desnome as nome,
+							d.desdata as data,
+							d.desnota as nota,
+							upper(d.desfornecedor) as fornecedor,
+							upper(d.deslocal) as local,
+							coalesce(d.desvalor,0) as valor
+						from rvidespesa d
+						where d.viacodigo = :VIAGEM
+						order by d.descodigo asc,desdata asc
+					</data>
+				</despesa>
+			</get_despesa>
 		</query>
 	</files>		
 </integrador>

@@ -52,6 +52,7 @@ class ViagemDadosController{
     viagem.destino = tecDestino.text;
     viagem.finalidade = tecFinalidade.text;
     viagem.acompanhantes = tecAcompanhantes.text;
+    viagem.observacao = tecObservacao.text;
     selectedDateChegada != null ? viagem.dataregresso = selectedDateChegada : selectedDateChegada = viagem.dataregresso;
     selectedDateSaida != null ? viagem.datasaida = selectedDateSaida : selectedDateSaida = viagem.datasaida;
   }
@@ -79,6 +80,7 @@ class ViagemDadosController{
     viagem.transporte = transporteSelected;
     viagem.dataregresso = selectedDateChegada;
     viagem.datasaida = selectedDateSaida;
+    viagem.observacao = tecObservacao.text;
     try{
       await viagemRepository.insertViagem(viagem,cnpj);
     }catch(e){

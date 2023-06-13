@@ -3,8 +3,10 @@ import 'package:arcusrev/model/viagem.dart';
 import 'package:arcusrev/repository/despesa_repository.dart';
 import 'package:arcusrev/repository/empresa_repository.dart';
 import 'package:arcusrev/utils/dataformato_util.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import '../model/despesa.dart';
+import '../widgets/circularprogress_widget.dart';
 
 class DespesasController{
   DespesaRepository despesaRepository = DespesaRepository();
@@ -16,6 +18,7 @@ class DespesasController{
   TextEditingController tecDocumento = TextEditingController();
   List<String> despesas = ['Combustivel','Hospedagem','Outras','Refeições','Sem comprovante'];
   EmpresaRepositoy empresaRepositoy = EmpresaRepositoy();
+  CircularProgressWidget circularProgressWidget = CircularProgressWidget();
   Empresa? empresa;
   String? despesaSelected;
   DateTime? selectedDate;
@@ -25,40 +28,62 @@ class DespesasController{
   alteraDados(Despesa despesa,{String? valor}){
     despesaSelected = valor;
     selectedDate == null ? null : despesa.data = selectedDate;
-    despesa.valor = double.tryParse(tecValor.text);
+    despesa.valor = double.tryParse(replaceValor());
     despesa.nome = despesaSelected;
     despesa.nota = tecDocumento.text;
     despesa.local = tecLocalidade.text;
     despesa.fornecedor = tecFornecedor.text;
   }
 
-  insertDespesas(Viagem viagem,String cnpj,{String? valor}){
+  String replaceValor(){
+    String texto = UtilBrasilFields.removerSimboloMoeda(tecValor.text);
+    String valorFormatado = texto.replaceAll(".", "").replaceAll(",", ".");
+    return texto.length < 7 ?
+    texto.replaceAll(',', '.') :
+    valorFormatado;
+  }
+
+  Future insertDespesas(Viagem viagem,String cnpj,{String? valor, dynamic context}) async{
     despesaSelected = valor;
     Despesa despesa = Despesa();
     despesa.id = maxId(viagem.despesas);
     despesa.data = selectedDate;
     despesa.nome = despesaSelected;
     despesa.nota = tecDocumento.text;
-    despesa.local = tecLocalidade.text.toUpperCase();
-    despesa.valor = double.tryParse(tecValor.text);
-    despesa.fornecedor = tecFornecedor.text.toUpperCase();
-    despesaRepository.insertDespesa(despesa,viagem.id!,cnpj);
-    viagem.despesas.add(despesa);
+    despesa.local = tecLocalidade.text;
+    despesa.valor = double.tryParse(replaceValor());
+    despesa.fornecedor = tecFornecedor.text;
+    try{
+      circularProgressWidget.showCircularProgress(context);
+      await despesaRepository.insertDespesa(despesa,viagem,cnpj);
+      await despesaRepository.getDespesa(viagem, cnpj);
+      circularProgressWidget.hideCircularProgress(context);
+    }catch(e){
+      print("erro ao inserir despesa $e");
+    }
+
   }
 
-  updateDespesas(Despesa despesa, int viagem,String cnpj,{String? valor}){
+
+
+  Future updateDespesas(Despesa despesa, Viagem viagem,String cnpj,{String? valor, dynamic context}) async{
     alteraDados(despesa,valor: valor);
-    try{
-      despesaRepository.updateDespesa(despesa, viagem,cnpj);
+    try {
+      circularProgressWidget.showCircularProgress(context);
+      await despesaRepository.updateDespesa(despesa, viagem,cnpj);
+      await despesaRepository.getDespesa(viagem, cnpj);
+      circularProgressWidget.hideCircularProgress(context);
     }catch(e){
       print("erro ao atualizar despesa $e");
     }
   }
 
-  deleteDespesas(Viagem viagem, int index, String cnpj){
+  Future deleteDespesas(Viagem viagem, int index, String cnpj,{dynamic context}) async{
     try{
-      despesaRepository.deleteDespesa(viagem, index,cnpj);
-      viagem.despesas.remove(viagem.despesas[index]);
+      circularProgressWidget.showCircularProgress(context);
+      await despesaRepository.deleteDespesa(viagem, index,cnpj);
+      await despesaRepository.getDespesa(viagem, cnpj);
+      circularProgressWidget.hideCircularProgress(context);
     }catch(e){
       print("erro ao deletar despesa $e");
     };
@@ -71,7 +96,7 @@ class DespesasController{
     tecDocumento.text = despesa.nota.toString();
     tecFornecedor.text = despesa.fornecedor!;
     tecLocalidade.text = despesa.local!;
-    tecValor.text = despesa.valor.toString();
+    tecValor.text = UtilBrasilFields.obterReal(despesa.valor!);
     tecData.text = DataFormatoUtil.getDate(despesa.data, 'dd/MM/yyyy');
   }
 
